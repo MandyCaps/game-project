@@ -11,7 +11,7 @@ var coinAngle = 5;
 // object variables
 var cloud;
 var mindy;
-var collectable;
+var coin;
 var canyon;
 var tree;
 
@@ -94,7 +94,7 @@ function setup()
 			pop();
 		}
 	}
-	collectable =
+	coin =
 	{
 		x_pos: 0,
 		y_pos: 0,
@@ -644,16 +644,14 @@ function draw()
 		gameChar_y  += fallSpeed;
 	}
 
-
-
-	// move the character left and right
+	// move the character left and right, now with SCROLLING
 	if (isLeft)
 	{
 		if (runSpeed < maxRunSpeed)
 		{
 			runSpeed *= runAccel;
 		}
-		if(gameChar_x > width * 0.2)
+		if(gameChar_x > width * 0.3)
 		{
 			gameChar_x -= runSpeed;
 		} else {
@@ -666,7 +664,7 @@ function draw()
 		{
 			runSpeed *= runAccel;
 		}
-		if (gameChar_x < width * 0.8)
+		if (gameChar_x < width * 0.7)
 		{
 			gameChar_x += runSpeed;
 		} else {
@@ -713,18 +711,19 @@ function draw()
 	}
 
 	// draw foreground
-	// draw collectable unless it's found
-	if(collectable.isFound === false)
-	{
-		collectable.draw(100, 415, 30);
-	}
 
-	// is player by collectable?
-	if(dist(collectable.x_pos + scrollPos, collectable.y_pos,
-	gameChar_x, gameChar_y) < 20)
-	{
-		collectable.isFound = true;
-	}
+
+		// draw coin unless it's found
+		if(coin.isFound === false)
+		{
+			coin.draw(100, 415, 30);
+		}
+		// is player by coin?
+		if(dist(coin.x_pos + scrollPos, coin.y_pos,
+		gameChar_x, gameChar_y) < coin.size)
+		{
+			coin.isFound = true;
+		}
 
 	pop();
 	// NON-CHARACTER CODE ENDS
