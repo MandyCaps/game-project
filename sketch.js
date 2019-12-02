@@ -589,7 +589,7 @@ function setup()
 	}
 
 	// multi-object arrays
-	trees_x = [10, 65, 130, 540, 674];
+	trees_x = [10, 65, 130, 540, 674, 2000];
 	clouds =
 		[
 			{
@@ -607,6 +607,12 @@ function setup()
 			{
 				x: 1300, y: 300, size: 40
 			},
+			{
+				x: 1800, y: 100, size: 60
+			},
+			{
+				x: 2250, y: 300, size: 40
+			}
 		];
 	canyons =
 		[
@@ -614,18 +620,21 @@ function setup()
 			{x: 600, width: 60},
 			{x: 800, width: 50},
 			{x: 1000, width: 50},
-			{x: 1500, width: 65}
+			{x: 1500, width: 65},
+			{x: 1700, width: 100}
 		]
 	coins =
 		[
 			{x: 100, y: 415, size: 30, isFound: false},
-			{x: 800, y: 415, size: 100, isFound: false}
+			{x: 800, y: 300, size: 100, isFound: false},
+			{x: 1500, y: 400, size: 40, isFound: false}
 		]
 	mountains =
 		[
 			{x: 312, y: 438, size: 10},
 			{x: 600, y: 438, size: 20},
-			{x: 1004, y: 438, size: 10}
+			{x: 1004, y: 438, size: 10},
+			{x: 2004, y: 438, size: 100}
 		]
 }
 
@@ -735,7 +744,7 @@ function draw()
 		}
 		// is player by coin?
 		if(dist(coin.x_pos + scrollPos, coin.y_pos,
-		gameChar_x, gameChar_y) < coin.size/2+5)
+		gameChar_x, gameChar_y-10) < coin.size/2+10)
 		{
 			coins[i].isFound = true;
 		}
