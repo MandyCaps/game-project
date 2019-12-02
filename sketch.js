@@ -1,32 +1,23 @@
-/*
-
-The Game Project
-
-2b - using variables
-
-*/
-
+// floor position
 var floorPos_y;
 
-var gameChar_x;
-var gameChar_y;
+// colour and style variables
 var shoeBlack = "#262020";
 var dressRed = "#AA1313";
 var skin1A = "#DBBCA5";
 var coinAngle = 5;
 
+// object variables
 var cloud;
 var mindy;
 var collectable;
 var canyon;
 var tree;
 
-var treePos_x;
-var treePos_y;
-
+// used for debugging, can be set by clicking
 var posString;
 
-// 3a variables
+// character control variables
 var isLeft = false;
 var isRight = false;
 var isGrounded = true;
@@ -34,6 +25,11 @@ var isJumping = false;
 var isFalling = false;
 var isPlummeting = false;
 
+// character position variables
+var gameChar_x = width/2;
+var gameChar_y = floorPos_y;
+
+// physics variables
 var maxRunSpeed = 5;
 var minRunSpeed = 1;
 var runSpeed = minRunSpeed;
@@ -583,12 +579,6 @@ function setup()
 		}
 	}
 
-	//NB. We are now using the built in variables height and width
-	gameChar_x = width/2;
-	gameChar_y = floorPos_y;
-
-	treePos_x = width/2-330;
-	treePos_y = floorPos_y;
 }
 
 function draw()
@@ -642,7 +632,7 @@ function draw()
 	noStroke();
 	// draw background scenery
 	mountain.draw();
-	tree.draw(treePos_x,treePos_y);
+	tree.draw(width/2-330,floorPos_y);
 	cloud.draw(100,170,40);
 	cloud.draw(600,105,10);
 	cloud.draw(900,222,-10);
