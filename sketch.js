@@ -95,8 +95,8 @@ function setup()
 	}
 	collectable =
 	{
-		x_pos: width/2-200,
-		y_pos: height/2+150,
+		x_pos: 0,
+		y_pos: 0,
 		size: 50,
 		isFound: false,
 		draw(x_pos,y_pos,size)
@@ -108,9 +108,9 @@ function setup()
 				y_pos = this.y_pos;
 				size = this.size;
 			} else {
-				this.x_pos = this;
-				this.y_pos = this;
-				this.size = this;
+				this.x_pos = x_pos;
+				this.y_pos = y_pos;
+				this.size = size;
 			}
 			var date = new Date();
 			var seconds = date.getSeconds();
@@ -697,6 +697,12 @@ function draw()
 
 	// draw foreground
 
+	// draw collectable unless it's found
+	if(collectable.isFound === false)
+	{
+		collectable.draw(100, 415, 30);
+	}
+
 	// is player by collectable?
 	if(dist(collectable.x_pos, collectable.y_pos,
 	gameChar_x, gameChar_y) < 20)
@@ -704,11 +710,6 @@ function draw()
 		collectable.isFound = true;
 	}
 
-	// draw collectable unless it's found
-	if(collectable.isFound === false)
-	{
-		collectable.draw(100, 415, 30);
-	}
 
 
 	// is player above canyon and on/below the ground?
