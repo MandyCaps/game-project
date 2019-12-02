@@ -28,6 +28,8 @@ var isPlummeting = false;
 // character position variables
 var gameChar_x = 400;
 var gameChar_y = 432;
+// width of character's feet (used for adjusting hitboxes)
+var gameChar_baseWidth = 20;
 
 // physics variables
 var maxRunSpeed = 5;
@@ -43,6 +45,7 @@ var fallAccel = 1.1;
 // declare multi-object arrays
 var trees_x;
 var clouds;
+var canyons;
 
 
 function setup()
@@ -572,8 +575,8 @@ function setup()
 				this.width = width;
 			}
 			push();
-			this.leftBound = x_pos;
-			this.rightBound = x_pos+width;
+			this.leftBound = x_pos + gameChar_baseWidth/2;
+			this.rightBound = x_pos + width - gameChar_baseWidth/2;
 			noStroke();
 			fill("#422c22");
 			rect(x_pos,floorPos_y,width,300);
@@ -604,6 +607,14 @@ function setup()
 				x: 1300, y: 300, size: 40
 			},
 		];
+	canyons =
+		[
+			{x: 340, width: 50},
+			{x: 600, width: 60},
+			{x: 800, width: 50},
+			{x: 1000, width: 50},
+			{x: 1500, width: 65}
+		]
 
 }
 
@@ -674,14 +685,17 @@ function draw()
 	rect(0, floorPos_y, width, height - floorPos_y); //draw some green ground
 
 	// canyon code
-	canyon.draw();
-	// is player above canyon and on/below the ground?
-	if (gameChar_x > canyon.leftBound && gameChar_x < canyon.rightBound &&
-	mindy.y >= floorPos_y)
+	for (var i = 0; i < canyons.length; i++)
 	{
-		// fall down the hole
-		console.log(isPlummeting);
-		isPlummeting = true;
+		canyon.draw(canyons[i].x,canyons[i].width);
+		// is player above canyon and on/below the ground?
+		if (gameChar_x > canyon.leftBound && gameChar_x < canyon.rightBound &&
+		mindy.y >= floorPos_y)
+		{
+			// fall down the hole
+			console.log(isPlummeting);
+			isPlummeting = true;
+		}
 	}
 
 	// prevent character from remaining in a jump state forever
