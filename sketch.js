@@ -40,8 +40,8 @@ var minFallSpeed = 1;
 var fallSpeed = minFallSpeed;
 var fallAccel = 1.1;
 
-// multi-object arrays
-var trees_x = [10, 65, 130, 590, 650];
+var trees_x;
+var clouds;
 
 
 function setup()
@@ -579,6 +579,27 @@ function setup()
 		}
 	}
 
+	// multi-object arrays
+	trees_x = [10, 65, 130, 590, 650];
+	clouds =
+		[
+			{
+				x: 100, y: 170, size: 40
+			},
+			{
+				x: 600, y: 105, size: 10
+			},
+			{
+				x: 900, y: 222, size: -10
+			},
+			{
+				x: 1100, y: 170, size: 40
+			},
+			{
+				x: 1300, y: 300, size: 40
+			},
+		];
+
 }
 
 function draw()
@@ -638,9 +659,10 @@ function draw()
 		tree.draw(trees_x[i],floorPos_y);
 	}
 
-	cloud.draw(100,170,40);
-	cloud.draw(600,105,10);
-	cloud.draw(900,222,-10);
+	for (var i = 0; i < clouds.length; i++)
+	{
+		cloud.draw(clouds[i].x,clouds[i].y,clouds[i].size);
+	}
 
 	// draw floor
 	fill("#008000");
