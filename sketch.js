@@ -1,7 +1,7 @@
 // floor position
 var floorPos_y;
 
-// colour and style variables
+// colour and style
 var shoeBlack = "#262020";
 var dressRed = "#AA1313";
 var skin1A = "#DBBCA5";
@@ -26,8 +26,8 @@ var isFalling = false;
 var isPlummeting = false;
 
 // character position variables
-var gameChar_x = width/2;
-var gameChar_y = floorPos_y;
+var gameChar_x = 400;
+var gameChar_y = 432;
 
 // physics variables
 var maxRunSpeed = 5;
@@ -40,7 +40,8 @@ var minFallSpeed = 1;
 var fallSpeed = minFallSpeed;
 var fallAccel = 1.1;
 
-
+// multi-object arrays
+var trees_x = [10, 65, 130, 590, 650];
 
 
 
