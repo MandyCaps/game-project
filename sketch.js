@@ -47,6 +47,7 @@ var fallAccel = 1.1;
 var trees_x;
 var clouds;
 var canyons;
+var mountains;
 
 
 function setup()
@@ -615,11 +616,16 @@ function setup()
 			{x: 1000, width: 50},
 			{x: 1500, width: 65}
 		]
-
 	coins =
 		[
 			{x: 100, y: 415, size: 30, isFound: false},
 			{x: 800, y: 415, size: 100, isFound: false}
+		]
+	mountains =
+		[
+			{x: 312, y: 438, size: 10},
+			{x: 600, y: 438, size: 20},
+			{x: 1004, y: 438, size: 10}
 		]
 }
 
@@ -684,7 +690,10 @@ function draw()
 	background(160, 170, 230); //fill the sky blue
 	noStroke();
 	// draw background scenery
-	mountain.draw();
+	for (var i = 0; i < mountains.length; i++)
+	{
+		mountain.draw(mountains[i].x,mountains[i].y,mountains[i].size);
+	}
 
 	for (var i = 0; i < trees_x.length; i++)
 	{
@@ -698,7 +707,7 @@ function draw()
 
 	// draw floor
 	fill("#008000");
-	rect(0, floorPos_y, width, height - floorPos_y); //draw some green ground
+	rect(0, floorPos_y, width*3, height - floorPos_y); //draw some green ground
 
 	// canyon code
 	for (var i = 0; i < canyons.length; i++)
