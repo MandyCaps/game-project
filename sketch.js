@@ -15,16 +15,16 @@ var dressRed = "#AA1313";
 var skin1A = "#DBBCA5";
 var coinAngle = 5;
 
+var cloud;
+var mindy;
+var collectable;
+var canyon;
+var tree;
 
 var treePos_x;
 var treePos_y;
 
 var posString;
-
-var mountain;
-var collectable;
-var cloud;
-var mindy;
 
 // 3a variables
 var isLeft = false;
@@ -47,6 +47,7 @@ var fallAccel = 1.1;
 
 
 
+
 function setup()
 {
 	createCanvas(1024, 576);
@@ -56,14 +57,7 @@ function setup()
 	// of the co-ordinate of the last mouse click
 	posString = "000, 000";
 
-	//NB. We are now using the built in variables height and width
-	gameChar_x = width/2;
-	gameChar_y = floorPos_y;
-
-	treePos_x = width/2-330;
-	treePos_y = floorPos_y;
-
-	// define some scenery objects
+	// make objects for game
 	mountain =
 	{
 		x_pos: width/2-200,
@@ -107,13 +101,17 @@ function setup()
 		isFound: false,
 		draw(x_pos,y_pos,size)
 		{
-			// if(x_pos === undefined || y_pos === undefined
-			// 	|| size === undefined)
-			// {
-			// 	x_pos = this.x_pos;
-			// 	y_pos = this.y_pos;
-			// 	size = this.size;
-			// }
+			if(x_pos === undefined || y_pos === undefined
+				|| size === undefined)
+			{
+				x_pos = this.x_pos;
+				y_pos = this.y_pos;
+				size = this.size;
+			} else {
+				this.x_pos = this;
+				this.y_pos = this;
+				this.size = this;
+			}
 			var date = new Date();
 			var seconds = date.getSeconds();
 			size = constrain(size,30,100);
@@ -152,7 +150,10 @@ function setup()
 				x_pos = this.x_pos;
 				y_pos = this.y_pos;
 				size = this.size;
-				console.log("bees");
+			} else {
+				this.x_pos = x_pos;
+				this.y_pos = y_pos;
+				this.size = size;
 			}
 			push();
 			translate(-200+x_pos,-125+y_pos);
@@ -166,355 +167,433 @@ function setup()
 	}
 
 	// define player object
-	mindy = {
-	  x: 0,
-	  y: 0,
-	  faceFront(x,y){
-	    if(x === undefined || y === undefined)
-	    {
-	      x = this.x;
-	      y = this.y;
-	    }
-	    ////facing forwards
-	    //SHOES
-	    noStroke();
-	    fill(shoeBlack);
+	mindy =
+	{
+		x: 0,
+		y: 0,
+		faceFront(x,y){
+			if(x === undefined || y === undefined)
+			{
+				x = this.x;
+				y = this.y;
+			} else {
+				this.x = x;
+				this.y = y;
+			}
+			////facing forwards
+			//SHOES
+			noStroke();
+			fill(shoeBlack);
 
-	    beginShape();
-	    vertex(x-3,y);
-	    vertex(x-10,y);
-	    vertex(x-8,y-7);
-	    vertex(x-3,y-7);
-	    endShape(CLOSE);
+			beginShape();
+			vertex(x-3,y);
+			vertex(x-10,y);
+			vertex(x-8,y-7);
+			vertex(x-3,y-7);
+			endShape(CLOSE);
 
-	    beginShape();
-	    vertex(x+3,y);
-	    vertex(x+10,y);
-	    vertex(x+8,y-7);
-	    vertex(x+3,y-7);
-	    endShape(CLOSE);
+			beginShape();
+			vertex(x+3,y);
+			vertex(x+10,y);
+			vertex(x+8,y-7);
+			vertex(x+3,y-7);
+			endShape(CLOSE);
 
-	    //ARM
-	    fill(shoeBlack);
-	    rect(x-7,y-56,4,13);
+			//ARM
+			fill(shoeBlack);
+			rect(x-7,y-56,4,13);
 
-	    fill(skin1A);
-	    rect(x-7,y-43,4,10);
+			fill(skin1A);
+			rect(x-7,y-43,4,10);
 
-	    fill(shoeBlack);
-	    rect(x+3,y-56,4,13);
-	    fill(skin1A);
-	    rect(x+3,y-43,4,10);
+			fill(shoeBlack);
+			rect(x+3,y-56,4,13);
+			fill(skin1A);
+			rect(x+3,y-43,4,10);
 
-	    //TORSO
-	    fill(dressRed);
-	    triangle(x,y-65,
-	             x-12,y-3,
-	            x+11,y-3);
-	    triangle(x,y-10,
-	            x-7,y-56,
-	            x+7,y-56);
+			//TORSO
+			fill(dressRed);
+			triangle(x,y-65,
+							 x-12,y-3,
+							x+11,y-3);
+			triangle(x,y-10,
+							x-7,y-56,
+							x+7,y-56);
 
-	    //HEAD
-	    fill(skin1A);
-	    beginShape();
-	    vertex(x-6,y-59);
-	    vertex(x,y-57);
-	    vertex(x+6,y-59);
-	    vertex(x+8,y-65);
-	    vertex(x+6,y-71);
-	    vertex(x,y-73);
-	    vertex(x-6,y-71);
-	    vertex(x-8,y-65);
-	    endShape(CLOSE);
-	  },
-	  jump(x,y){
-	      if(x === undefined || y === undefined)
-	      {
-	        x = this.x;
-	        y = this.y;
-	      }
-	      noStroke();
-	      //SHOES
-	      fill(shoeBlack);
-	      beginShape();
-	      vertex(x-3,y-10);
-	      vertex(x-10,y-8);
-	      vertex(x-8,y-17);
-	      vertex(x-4,y-17);
-	      endShape(CLOSE);
+			//HEAD
+			fill(skin1A);
+			beginShape();
+			vertex(x-6,y-59);
+			vertex(x,y-57);
+			vertex(x+6,y-59);
+			vertex(x+8,y-65);
+			vertex(x+6,y-71);
+			vertex(x,y-73);
+			vertex(x-6,y-71);
+			vertex(x-8,y-65);
+			endShape(CLOSE);
+		},
+		jump(x,y){
+				if(x === undefined || y === undefined)
+				{
+					x = this.x;
+					y = this.y;
+				} else {
+					this.x = x;
+					this.y = y;
+				}
+				noStroke();
+				//SHOES
+				fill(shoeBlack);
+				beginShape();
+				vertex(x-3,y-10);
+				vertex(x-10,y-8);
+				vertex(x-8,y-17);
+				vertex(x-4,y-17);
+				endShape(CLOSE);
 
-	      beginShape();
-	      vertex(x+3,y-10);
-	      vertex(x+10,y-8);
-	      vertex(x+8,y-17);
-	      vertex(x+4,y-17);
-	      endShape(CLOSE);
+				beginShape();
+				vertex(x+3,y-10);
+				vertex(x+10,y-8);
+				vertex(x+8,y-17);
+				vertex(x+4,y-17);
+				endShape(CLOSE);
 
-	      //ARM
-	      fill(skin1A);
-	      rect(x-17,y-64,4,10);
+				//ARM
+				fill(skin1A);
+				rect(x-17,y-64,4,10);
 
-	      fill(shoeBlack);
-	      rect(x-17,y-56,13,4);
+				fill(shoeBlack);
+				rect(x-17,y-56,13,4);
 
-	      fill(skin1A);
-	      rect(x+12,y-64,4,10);
+				fill(skin1A);
+				rect(x+12,y-64,4,10);
 
-	      fill(shoeBlack);
-	      rect(x+3,y-56,13,4 );
+				fill(shoeBlack);
+				rect(x+3,y-56,13,4 );
 
-	      //TORSO
-	      fill(dressRed);
-	      triangle(x,y-65,
-	               x-13,y-15,
-	              x+13        ,y-15);
-	      triangle(x,y-16,
-	              x-8,y-58,
-	              x+8,y-58);
+				//TORSO
+				fill(dressRed);
+				triangle(x,y-65,
+								 x-13,y-15,
+								x+13        ,y-15);
+				triangle(x,y-16,
+								x-8,y-58,
+								x+8,y-58);
 
-	      //HEAD
-	      fill(skin1A);
-	      beginShape();
-	      vertex(x-6,y-60);
-	      vertex(x,y-58);
-	      vertex(x+6,y-60);
-	      vertex(x+8,y-66);
-	      vertex(x+6,y-72);
-	      vertex(x,y-74);
-	      vertex(x-6,y-72);
-	      vertex(x-8,y-66);
-	      endShape(CLOSE);
-	  },
-	  walkLeft(x,y){
-	    if(x === undefined || y === undefined)
-	    {
-	      x = this.x;
-	      y = this.y;
-	    }
-	    noStroke();
-	    //SHOES
-	      fill(shoeBlack);
+				//HEAD
+				fill(skin1A);
+				beginShape();
+				vertex(x-6,y-60);
+				vertex(x,y-58);
+				vertex(x+6,y-60);
+				vertex(x+8,y-66);
+				vertex(x+6,y-72);
+				vertex(x,y-74);
+				vertex(x-6,y-72);
+				vertex(x-8,y-66);
+				endShape(CLOSE);
+		},
+		walkLeft(x,y){
+			if(x === undefined || y === undefined)
+			{
+				x = this.x;
+				y = this.y;
+			} else {
+				this.x = x;
+				this.y = y;
+			}
 
-	      beginShape();
-	      vertex(x+3,y);
-	      vertex(x-4,y);
-	      vertex(x-2,y-7);
-	      vertex(x+3,y-7);
-	      endShape(CLOSE);
+			noStroke();
+			//SHOES
+				fill(shoeBlack);
 
-	      //ARM
-	      fill(shoeBlack);
-	      rect(x-7,y-56,4,13);
+				beginShape();
+				vertex(x+3,y);
+				vertex(x-4,y);
+				vertex(x-2,y-7);
+				vertex(x+3,y-7);
+				endShape(CLOSE);
 
-	      fill(skin1A);
-	      rect(x-7,y-43,4,10);
+				//ARM
+				fill(shoeBlack);
+				rect(x-7,y-56,4,13);
 
-	      //TORSO
-	      fill(dressRed);
-	      triangle(x,y-65,
-	               x-10,y-3,
-	              x+9,y-3);
-	      triangle(x,y-10,
-	              x-7,y-56,
-	              x+7,y-56);
+				fill(skin1A);
+				rect(x-7,y-43,4,10);
 
-	      //HEAD
-	      fill(skin1A);
-	      beginShape();
-	      vertex(x-6,y-59);
-	      vertex(x,y-57);
-	      vertex(x+6,y-59);
-	      vertex(x+8,y-65);
-	      vertex(x+6,y-71);
-	      vertex(x,y-73);
-	      vertex(x-6,y-71);
-	      vertex(x-8,y-65);
-	      endShape(CLOSE);
+				//TORSO
+				fill(dressRed);
+				triangle(x,y-65,
+								 x-10,y-3,
+								x+9,y-3);
+				triangle(x,y-10,
+								x-7,y-56,
+								x+7,y-56);
 
-	      //ARM ON TOP
-	      fill(shoeBlack);
-	      rect(x+3,y-56,4,13);
-	      fill(skin1A);
-	      rect(x+3,y-43,4,10);
-	  },
-	  walkRight(x,y){
-	    if(x === undefined || y === undefined)
-	    {
-	      x = this.x;
-	      y = this.y;
-	    }
-	    noStroke();
-	    //SHOES
-	    fill(shoeBlack);
+				//HEAD
+				fill(skin1A);
+				beginShape();
+				vertex(x-6,y-59);
+				vertex(x,y-57);
+				vertex(x+6,y-59);
+				vertex(x+8,y-65);
+				vertex(x+6,y-71);
+				vertex(x,y-73);
+				vertex(x-6,y-71);
+				vertex(x-8,y-65);
+				endShape(CLOSE);
 
-	    beginShape();
-	    vertex(x-3,y);
-	    vertex(x+4,y);
-	    vertex(x+2,y-7);
-	    vertex(x-3,y-7);
-	    endShape(CLOSE);
+				//ARM ON TOP
+				fill(shoeBlack);
+				rect(x+3,y-56,4,13);
+				fill(skin1A);
+				rect(x+3,y-43,4,10);
+		},
+		walkRight(x,y){
+			if(x === undefined || y === undefined)
+			{
+				x = this.x;
+				y = this.y;
+			} else {
+				this.x = x;
+				this.y = y;
+			}
 
-	    //ARM
-	    fill(shoeBlack);
-	    rect(x+3,y-56,4,13);
-	    fill(skin1A);
-	    rect(x+3,y-43,4,10);
+			noStroke();
+			//SHOES
+			fill(shoeBlack);
 
-	    //TORSO
-	    fill(dressRed);
-	    triangle(x,y-65,
-	             x-9,y-3,
-	            x+10,y-3);
-	    triangle(x,y-10,
-	            x-7,y-56,
-	            x+7,y-56);
+			beginShape();
+			vertex(x-3,y);
+			vertex(x+4,y);
+			vertex(x+2,y-7);
+			vertex(x-3,y-7);
+			endShape(CLOSE);
 
-	    //HEAD
-	    fill(skin1A);
-	    beginShape();
-	    vertex(x-6,y-59);
-	    vertex(x,y-57);
-	    vertex(x+6,y-59);
-	    vertex(x+8,y-65);
-	    vertex(x+6,y-71);
-	    vertex(x,y-73);
-	    vertex(x-6,y-71);
-	    vertex(x-8,y-65);
-	    endShape(CLOSE);
+			//ARM
+			fill(shoeBlack);
+			rect(x+3,y-56,4,13);
+			fill(skin1A);
+			rect(x+3,y-43,4,10);
 
-	    //ARM ON TOP
-	    fill(shoeBlack);
-	    rect(x-7,y-56,4,13);
+			//TORSO
+			fill(dressRed);
+			triangle(x,y-65,
+							 x-9,y-3,
+							x+10,y-3);
+			triangle(x,y-10,
+							x-7,y-56,
+							x+7,y-56);
 
-	    fill(skin1A);
-	    rect(x-7,y-43,4,10);
-	  },
-	  jumpLeft(x,y){
-	    if(x === undefined || y === undefined)
-	    {
-	      x = this.x;
-	      y = this.y;
-	    }
-	    //SHOES
-	    fill(shoeBlack);
+			//HEAD
+			fill(skin1A);
+			beginShape();
+			vertex(x-6,y-59);
+			vertex(x,y-57);
+			vertex(x+6,y-59);
+			vertex(x+8,y-65);
+			vertex(x+6,y-71);
+			vertex(x,y-73);
+			vertex(x-6,y-71);
+			vertex(x-8,y-65);
+			endShape(CLOSE);
 
-	    beginShape();
-	    vertex(x-3,y-10);
-	    vertex(x-10,y-8);
-	    vertex(x-8,y-17);
-	    vertex(x-4,y-17);
-	    endShape(CLOSE);
+			//ARM ON TOP
+			fill(shoeBlack);
+			rect(x-7,y-56,4,13);
 
-	    beginShape();
-	    vertex(x+3,y-10);
-	    vertex(x+10,y-8);
-	    vertex(x+8,y-17);
-	    vertex(x+4,y-17);
-	    endShape(CLOSE);
+			fill(skin1A);
+			rect(x-7,y-43,4,10);
+		},
+		jumpLeft(x,y){
+			if(x === undefined || y === undefined)
+			{
+				x = this.x;
+				y = this.y;
+			} else {
+				this.x = x;
+				this.y = y;
+			}
 
-	    //ARM
-	    fill(skin1A);
-	    rect(x-17,y-64,4,10);
+			//SHOES
+			fill(shoeBlack);
 
-	    fill(shoeBlack);
-	    rect(x-17,y-56,13,4);
+			beginShape();
+			vertex(x-3,y-10);
+			vertex(x-10,y-8);
+			vertex(x-8,y-17);
+			vertex(x-4,y-17);
+			endShape(CLOSE);
 
-	    //TORSO
-	    fill(dressRed);
-	    triangle(x,y-65,
-	             x-13,y-15,
-	            x+13        ,y-15);
-	    triangle(x,y-16,
-	            x-8,y-58,
-	            x+8,y-58);
+			beginShape();
+			vertex(x+3,y-10);
+			vertex(x+10,y-8);
+			vertex(x+8,y-17);
+			vertex(x+4,y-17);
+			endShape(CLOSE);
+
+			//ARM
+			fill(skin1A);
+			rect(x-17,y-64,4,10);
+
+			fill(shoeBlack);
+			rect(x-17,y-56,13,4);
+
+			//TORSO
+			fill(dressRed);
+			triangle(x,y-65,
+							 x-13,y-15,
+							x+13        ,y-15);
+			triangle(x,y-16,
+							x-8,y-58,
+							x+8,y-58);
 
 
-	    //ARM ON TOP
-	    fill(skin1A);
-	    rect(x+12,y-53,4,10);
-	    fill(shoeBlack);
-	    rect(x+3,y-56,13,4 );
+			//ARM ON TOP
+			fill(skin1A);
+			rect(x+12,y-53,4,10);
+			fill(shoeBlack);
+			rect(x+3,y-56,13,4 );
 
-	    //HEAD
-	    fill(skin1A);
-	    beginShape();
-	    vertex(x-6,y-60);
-	    vertex(x,y-58);
-	    vertex(x+6,y-60);
-	    vertex(x+8,y-66);
-	    vertex(x+6,y-72);
-	    vertex(x,y-74);
-	    vertex(x-6,y-72);
-	    vertex(x-8,y-66);
-	    endShape(CLOSE);
-	  },
-	  jumpRight(x,y){
-	    if(x === undefined || y === undefined)
-	    {
-	      x = this.x;
-	      y = this.y;
-	    }
-	    noStroke();
-	    //SHOES
-	    fill(shoeBlack);
+			//HEAD
+			fill(skin1A);
+			beginShape();
+			vertex(x-6,y-60);
+			vertex(x,y-58);
+			vertex(x+6,y-60);
+			vertex(x+8,y-66);
+			vertex(x+6,y-72);
+			vertex(x,y-74);
+			vertex(x-6,y-72);
+			vertex(x-8,y-66);
+			endShape(CLOSE);
+		},
+		jumpRight(x,y){
+			if(x === undefined || y === undefined)
+			{
+				x = this.x;
+				y = this.y;
+			} else {
+				this.x = x;
+				this.y = y;
+			}
+			noStroke();
+			//SHOES
+			fill(shoeBlack);
 
-	    beginShape();
-	    vertex(x-3,y-10);
-	    vertex(x-10,y-8);
-	    vertex(x-8,y-17);
-	    vertex(x-4,y-17);
-	    endShape(CLOSE);
+			beginShape();
+			vertex(x-3,y-10);
+			vertex(x-10,y-8);
+			vertex(x-8,y-17);
+			vertex(x-4,y-17);
+			endShape(CLOSE);
 
-	    beginShape();
-	    vertex(x+3,y-10);
-	    vertex(x+10,y-8);
-	    vertex(x+8,y-17);
-	    vertex(x+4,y-17);
-	    endShape(CLOSE);
+			beginShape();
+			vertex(x+3,y-10);
+			vertex(x+10,y-8);
+			vertex(x+8,y-17);
+			vertex(x+4,y-17);
+			endShape(CLOSE);
 
-	    //ARM
-	    fill(skin1A);
-	    rect(x+12,y-64,4,10);
-	    fill(shoeBlack);
-	    rect(x+3,y-56,13,4 );
+			//ARM
+			fill(skin1A);
+			rect(x+12,y-64,4,10);
+			fill(shoeBlack);
+			rect(x+3,y-56,13,4 );
 
-	    //TORSO
-	    fill(dressRed);
-	    triangle(x,y-65,
-	             x-13,y-15,
-	            x+13        ,y-15);
-	    triangle(x,y-16,
-	            x-8,y-58,
-	            x+8,y-58);
+			//TORSO
+			fill(dressRed);
+			triangle(x,y-65,
+							 x-13,y-15,
+							x+13        ,y-15);
+			triangle(x,y-16,
+							x-8,y-58,
+							x+8,y-58);
 
-	    //HEAD
-	    fill(skin1A);
-	    beginShape();
-	    vertex(x-6,y-60);
-	    vertex(x,y-58);
-	    vertex(x+6,y-60);
-	    vertex(x+8,y-66);
-	    vertex(x+6,y-72);
-	    vertex(x,y-74);
-	    vertex(x-6,y-72);
-	    vertex(x-8,y-66);
-	    endShape(CLOSE);
+			//HEAD
+			fill(skin1A);
+			beginShape();
+			vertex(x-6,y-60);
+			vertex(x,y-58);
+			vertex(x+6,y-60);
+			vertex(x+8,y-66);
+			vertex(x+6,y-72);
+			vertex(x,y-74);
+			vertex(x-6,y-72);
+			vertex(x-8,y-66);
+			endShape(CLOSE);
 
-	    //ARM ON TOP
-	    fill(skin1A);
-	    rect(x-17,y-54,4,10);
+			//ARM ON TOP
+			fill(skin1A);
+			rect(x-17,y-54,4,10);
 
-	    fill(shoeBlack);
-	    rect(x-17,y-56,13,4);
-	  }
+			fill(shoeBlack);
+			rect(x-17,y-56,13,4);
+		}
 	}
 
+	tree =
+	{
+		x_pos: 0,
+		y_pos: 0,
+		draw(x_pos,y_pos)
+		{
+			if(x_pos === undefined || y_pos === undefined)
+			{
+				x_pos = this.x_pos;
+				y_pos = this.y_pos;
+			} else {
+				this.x_pos = x_pos;
+				this.y_pos = y_pos;
+			}
+			push();
+			translate(x_pos-904-11,y_pos-487);
+			noStroke();
+			fill("#543628");
+			rect(904,417,22,70);
+			fill("#008000");
+			triangle(915,385,872,460,958,460);
+			triangle(915,369,876.3,436,953.7,436);
+			triangle(915,353,880,412.5,950,413);
+			pop();
+		}
+	}
 
+	canyon =
+	{
+		x_pos: 300,
+		width: 20,
+		draw(x_pos,width)
+		{
+			if(x_pos === undefined || width === undefined)
+			{
+				x_pos = this.x_pos;
+				width = this.width;
+			} else {
+				this.x_pos = x_pos;
+				this.width = width;
+			}
+			push();
+			noStroke();
+			translate(x_pos-100, 0);
+			fill("#422c22");
+			triangle(50-width/2,432,100,700,100+width/2,432);
+			pop();
+		}
+	}
+
+	//NB. We are now using the built in variables height and width
+	gameChar_x = width/2;
+	gameChar_y = floorPos_y;
+
+	treePos_x = width/2-330;
+	treePos_y = floorPos_y;
 }
 
 function draw()
 {
+	// falling mechanics (should be at the top)
 	if(isPlummeting)
 	{
 		console.log("AAUGH");
@@ -573,6 +652,12 @@ function draw()
 	rect(0, floorPos_y, height, width - floorPos_y); //draw some green ground
 	canyon.draw();
 
+	// prevent character from remaining in a jump state forever
+	// (corrects bug which allows hover-mode)
+	if (isGrounded == true)
+	{
+		isJumping = false;
+	}
 	// draw player character
 	if (isJumping == true && isLeft == true)
 	{
@@ -612,15 +697,6 @@ function draw()
 
 	// draw foreground
 
-	// draw collectable unless it's found
-	if(collectable.isFound === false)
-	{
-		collectable.x_pos = 100;
-		collectable.y_pos	= 415;
-		collectable.size = 30;
-		collectable.draw(collectable.x_pos, collectable.y_pos, collectable.size);
-	}
-
 	// is player by collectable?
 	if(dist(collectable.x_pos, collectable.y_pos,
 	gameChar_x, gameChar_y) < 20)
@@ -628,10 +704,18 @@ function draw()
 		collectable.isFound = true;
 	}
 
-	// is player above canyon and not jumping?
-	if (gameChar_x < canyon.x_pos + 5 && gameChar_x > canyon.x_pos - 55
-		&& isJumping == false)
+	// draw collectable unless it's found
+	if(collectable.isFound === false)
 	{
+		collectable.draw(100, 415, 30);
+	}
+
+
+	// is player above canyon and on/below the ground?
+	if (gameChar_x < canyon.x_pos + 5 && gameChar_x > canyon.x_pos - 55 &&
+	mindy.y >= floorPos_y)
+	{
+		// fall down the hole
 		console.log(isPlummeting);
 		isPlummeting = true;
 	}
@@ -699,48 +783,4 @@ function mousePressed()
 	gameChar_x = mouseX;
 	gameChar_y = mouseY;
 	posString = mouseX+", "+mouseY;
-}
-
-tree =
-{
-	x_pos: 0,
-	y_pos: 0,
-	draw(x_pos,y_pos)
-	{
-		if(x_pos === undefined || y_pos === undefined)
-		{
-			x = this.x_pos;
-			y = this.y_pos;
-		}
-		push();
-		translate(x_pos-904-11,y_pos-487);
-		noStroke();
-		fill("#543628");
-		rect(904,417,22,70);
-		fill("#008000");
-		triangle(915,385,872,460,958,460);
-		triangle(915,369,876.3,436,953.7,436);
-		triangle(915,353,880,412.5,950,413);
-		pop();
-	}
-}
-
-canyon =
-{
-	x_pos: 300,
-	width: 20,
-	draw(x_pos,width)
-	{
-		if(x_pos === undefined || width === undefined)
-		{
-			x_pos = this.x_pos;
-			width = this.width;
-		}
-		push();
-		noStroke();
-		translate(x_pos-100, 0);
-		fill("#422c22");
-		triangle(50-width/2,432,100,700,100+width/2,432);
-		pop();
-	}
 }
