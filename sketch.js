@@ -40,6 +40,7 @@ var minFallSpeed = 1;
 var fallSpeed = minFallSpeed;
 var fallAccel = 1.1;
 
+// declare multi-object arrays
 var trees_x;
 var clouds;
 
@@ -559,7 +560,7 @@ function setup()
 	canyon =
 	{
 		x_pos: 300,
-		width: 20,
+		width: 50,
 		draw(x_pos,width)
 		{
 			if(x_pos === undefined || width === undefined)
@@ -571,10 +572,14 @@ function setup()
 				this.width = width;
 			}
 			push();
+			this.leftBound = x_pos;
+			this.rightBound = x_pos+width;
 			noStroke();
-			translate(x_pos-100, 0);
 			fill("#422c22");
-			triangle(50-width/2,432,100,700,100+width/2,432);
+			rect(x_pos,floorPos_y,width,300);
+			fill(0,0,0,40);
+			rect(x_pos + (width/4),floorPos_y,width/2,300);
+			rect(x_pos + (width/6),floorPos_y,width/3*2,300);
 			pop();
 		}
 	}
@@ -667,7 +672,17 @@ function draw()
 	// draw floor
 	fill("#008000");
 	rect(0, floorPos_y, width, height - floorPos_y); //draw some green ground
+
+	// canyon code
 	canyon.draw();
+	// is player above canyon and on/below the ground?
+	if (gameChar_x > canyon.leftBound && gameChar_x < canyon.rightBound &&
+	mindy.y >= floorPos_y)
+	{
+		// fall down the hole
+		console.log(isPlummeting);
+		isPlummeting = true;
+	}
 
 	// prevent character from remaining in a jump state forever
 	// (corrects bug which allows hover-mode)
@@ -725,17 +740,6 @@ function draw()
 	gameChar_x, gameChar_y) < 20)
 	{
 		collectable.isFound = true;
-	}
-
-
-
-	// is player above canyon and on/below the ground?
-	if (gameChar_x < canyon.x_pos + 5 && gameChar_x > canyon.x_pos - 55 &&
-	mindy.y >= floorPos_y)
-	{
-		// fall down the hole
-		console.log(isPlummeting);
-		isPlummeting = true;
 	}
 
 
