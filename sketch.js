@@ -1,5 +1,6 @@
-// floor position
+// environment positioning variables
 var floorPos_y;
+var scrollPos = 0;
 
 // colour and style
 var shoeBlack = "#262020";
@@ -588,7 +589,7 @@ function setup()
 	}
 
 	// multi-object arrays
-	trees_x = [10, 65, 130, 590, 650];
+	trees_x = [10, 65, 130, 540, 674];
 	clouds =
 		[
 			{
@@ -652,18 +653,30 @@ function draw()
 		{
 			runSpeed *= runAccel;
 		}
-		gameChar_x -= runSpeed;
+		if(gameChar_x > width * 0.2)
+		{
+			gameChar_x -= runSpeed;
+		} else {
+			scrollPos += runSpeed;
+		}
 	}
 	else if (isRight)
 	{
+		if (runSpeed < maxRunSpeed)
 		{
-			if (runSpeed < maxRunSpeed)
-			{
-				runSpeed *= runAccel;
-			}
+			runSpeed *= runAccel;
+		}
+		if (gameChar_x < width * 0.8)
+		{
 			gameChar_x += runSpeed;
+		} else {
+			scrollPos -= runSpeed;
 		}
 	}
+
+	// NON-CHARACTER CODE BEGINS
+	push();
+	translate(scrollPos, 0);
 
 	background(160, 170, 230); //fill the sky blue
 	noStroke();
@@ -689,14 +702,32 @@ function draw()
 	{
 		canyon.draw(canyons[i].x,canyons[i].width);
 		// is player above canyon and on/below the ground?
-		if (gameChar_x > canyon.leftBound && gameChar_x < canyon.rightBound &&
-		mindy.y >= floorPos_y)
+		if (gameChar_x > canyon.leftBound + scrollPos
+			&& gameChar_x < canyon.rightBound + scrollPos
+			&& mindy.y >= floorPos_y)
 		{
 			// fall down the hole
 			console.log(isPlummeting);
 			isPlummeting = true;
 		}
 	}
+
+	// draw foreground
+	// draw collectable unless it's found
+	if(collectable.isFound === false)
+	{
+		collectable.draw(100, 415, 30);
+	}
+
+	// is player by collectable?
+	if(dist(collectable.x_pos + scrollPos, collectable.y_pos,
+	gameChar_x, gameChar_y) < 20)
+	{
+		collectable.isFound = true;
+	}
+
+	pop();
+	// NON-CHARACTER CODE ENDS
 
 	// prevent character from remaining in a jump state forever
 	// (corrects bug which allows hover-mode)
@@ -739,21 +770,6 @@ function draw()
 		}
 	} else {
 		mindy.faceFront(gameChar_x,gameChar_y);
-	}
-
-	// draw foreground
-
-	// draw collectable unless it's found
-	if(collectable.isFound === false)
-	{
-		collectable.draw(100, 415, 30);
-	}
-
-	// is player by collectable?
-	if(dist(collectable.x_pos, collectable.y_pos,
-	gameChar_x, gameChar_y) < 20)
-	{
-		collectable.isFound = true;
 	}
 
 
