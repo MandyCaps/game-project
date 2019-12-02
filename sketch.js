@@ -633,7 +633,7 @@ function draw()
 	// draw background scenery
 	mountain.draw();
 
-	for (var i = 1; i < trees_x.length; i++)
+	for (var i = 0; i < trees_x.length; i++)
 	{
 		tree.draw(trees_x[i],floorPos_y);
 	}
