@@ -44,7 +44,6 @@ var fallAccel = 1.1;
 var trees_x = [10, 65, 130, 590, 650];
 
 
-
 function setup()
 {
 	createCanvas(1024, 576);
@@ -633,14 +632,19 @@ function draw()
 	noStroke();
 	// draw background scenery
 	mountain.draw();
-	tree.draw(width/2-330,floorPos_y);
+
+	for (var i = 1; i < trees_x.length; i++)
+	{
+		tree.draw(trees_x[i],floorPos_y);
+	}
+
 	cloud.draw(100,170,40);
 	cloud.draw(600,105,10);
 	cloud.draw(900,222,-10);
 
 	// draw floor
 	fill("#008000");
-	rect(0, floorPos_y, height, width - floorPos_y); //draw some green ground
+	rect(0, floorPos_y, width, height - floorPos_y); //draw some green ground
 	canyon.draw();
 
 	// prevent character from remaining in a jump state forever
