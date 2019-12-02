@@ -99,7 +99,6 @@ function setup()
 		x_pos: 0,
 		y_pos: 0,
 		size: 50,
-		isFound: false,
 		draw(x_pos,y_pos,size)
 		{
 			if(x_pos === undefined || y_pos === undefined
@@ -617,7 +616,13 @@ function setup()
 			{x: 1500, width: 65}
 		]
 
+	coins =
+		[
+			{x: 100, y: 415, size: 30, isFound: false},
+			{x: 800, y: 415, size: 100, isFound: false}
+		]
 }
+
 
 function draw()
 {
@@ -712,19 +717,20 @@ function draw()
 
 	// draw foreground
 
-
+	for (var i = 0; i < coins.length; i++)
+	{
 		// draw coin unless it's found
-		if(coin.isFound === false)
+		if(coins[i].isFound === false)
 		{
-			coin.draw(100, 415, 30);
+			coin.draw(coins[i].x, coins[i].y, coins[i].size);
 		}
 		// is player by coin?
 		if(dist(coin.x_pos + scrollPos, coin.y_pos,
-		gameChar_x, gameChar_y) < coin.size)
+		gameChar_x, gameChar_y) < coin.size/2+5)
 		{
-			coin.isFound = true;
+			coins[i].isFound = true;
 		}
-
+	}
 	pop();
 	// NON-CHARACTER CODE ENDS
 
