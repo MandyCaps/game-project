@@ -761,29 +761,28 @@ function draw()
 	// draw background scenery
 	mountain.drawMountains(mountains);
 
-	// TREE CODE HERE
+	// tree code
 	tree.drawTrees(trees_x);
-	// END TREE CODE
+	// tree code end
 
-	// CLOUD CODE
+	// cloud code
 	cloud.drawClouds(clouds);
-	// END CLOUD CODE
+	// cloud code end
 
 	// draw floor
 	fill("#008000");
 	rect(0, floorPos_y, width*3, height - floorPos_y);
 	// draw floor END
 
-	// CANYON CODE
+	// canyon code
 	canyon.drawCanyons(canyons);
 	canyon.checkCanyons(canyons);
-	// END CANYON CODE
+	// canyon code end
 
-	// collectable CODE
+	// collectable code
 	collectable.drawCollectables(collectables);
 	collectable.checkCollectables(collectables);
-	// END collectable CODE
-
+	// collectable code end
 	pop();
 
 	// CHARACTER LOGIC BEGINS
