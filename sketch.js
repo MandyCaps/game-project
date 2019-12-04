@@ -100,7 +100,7 @@ function setup()
 	createCanvas(1024, 576);
 
 	// multi-object arrays containing game items
-	trees_x = [10, 65, 130, 540, 674, 2000];
+	trees_x = [10, 65, 130, 540, 674, 1340, 2000];
 	clouds =
 		[
 			{
@@ -138,7 +138,7 @@ function setup()
 		[
 			{x: 100, y: 415, size: 30, isFound: false},
 			{x: 800, y: 300, size: 100, isFound: false},
-			{x: 1500, y: 400, size: 40, isFound: false}
+			{x: 1490, y: 400, size: 40, isFound: false}
 		]
 	mountains =
 		[
@@ -739,7 +739,6 @@ function setup()
 					&& mindy.y >= floorPos_y)
 				{
 					// fall down the hole
-					console.log(isPlummeting);
 					isPlummeting = true;
 				}
 			}
@@ -828,7 +827,6 @@ function draw()
 	// falling mechanics
 	if(isPlummeting)
 	{
-		console.log("AAUGH");
 		fallSpeed *= fallAccel;
 		runSpeed = 0; // prevent character from leaving edge of canyon
 	}
@@ -949,5 +947,5 @@ function mousePressed()
 {
 	gameChar_x = mouseX;
 	gameChar_y = mouseY;
-	posString = mouseX+", "+mouseY;
+	posString = mouseX-Math.round(scrollPos)+", "+mouseY;
 }
