@@ -1,6 +1,11 @@
 // environment positioning variables
 var floorPos_y;
 var scrollPos = 0;
+var floorPos_y = 432; //NB. we are now using a variable for the floor position
+
+// initialising var which will contain human-readable form
+// of the co-ordinate of the last mouse click - this is for debugging
+var posString = "000, 000";
 
 // colour and style
 var shoeBlack = "#262020";
@@ -8,9 +13,11 @@ var dressRed = "#AA1313";
 var skin1A = "#DBBCA5";
 var coinAngle = 5;
 
-// object variables
-var cloud;
+// player object variable
 var mindy;
+
+// environment object variables
+var cloud;
 var coin;
 var canyon;
 var tree;
@@ -29,6 +36,7 @@ var isPlummeting = false;
 // character position variables
 var gameChar_x = 400;
 var gameChar_y = 432;
+var gameChar_world_x = gameChar_x - scrollPos;
 // width of character's feet (used for adjusting hitboxes)
 var gameChar_baseWidth = 20;
 
@@ -53,13 +61,10 @@ var mountains;
 function setup()
 {
 	createCanvas(1024, 576);
-	floorPos_y = 432; //NB. we are now using a variable for the floor position
 
-	// initialising var which will contain human-readable form
-	// of the co-ordinate of the last mouse click
-	posString = "000, 000";
 
-	// make objects for game
+
+	// make environment objects for game
 	mountain =
 	{
 		x_pos: width/2-200,
@@ -93,6 +98,14 @@ function setup()
 			vertex(417-size,476+size);
 			endShape(CLOSE);
 			pop();
+		},
+		drawMountains(allMountains)
+		{
+			for (var i = 0; i < allMountains.length; i++)
+			{
+				mountain.draw(allMountains[i].x,allMountains[i].y,
+					allMountains[i].size);
+			}
 		}
 	}
 	coin =
@@ -119,23 +132,45 @@ function setup()
 			coinAngle = constrain(coinAngle,-1.5,1.5);
 			if(seconds % 2 == 0)
 			{
-
-				coinAngle+=0.1;
+				coinAngle += 0.1;
 			}
 			else
 			{
-
-				coinAngle-=0.1;
+				coinAngle -= 0.1;
 			}
 			push();
 			noStroke();
-			translate(x_pos,y_pos);
+			translate(x_pos, y_pos);
 			ellipseMode(CENTER);
 			fill("#DDDD66")
 			ellipse(coinAngle-coinAngle*2,0,size-coinAngle,size);
 			fill("#FFFF99");
 			ellipse(coinAngle,0,size-coinAngle,size);
 			pop();
+		},
+		drawCollectables(t_collectable)
+		{
+			for (var i = 0; i < t_collectable.length; i++)
+			{
+				// draw coin unless it's found
+				if(t_collectable[i].isFound === false)
+				{
+					coin.draw(t_collectable[i].x, t_collectable[i].y, t_collectable[i].size);
+				}
+			}
+		},
+		checkCollectables(t_collectable)
+		{
+			for (var i = 0; i < t_collectable.length; i++)
+			{
+				// is player by coin?
+				if(dist(t_collectable[i].x + scrollPos, t_collectable[i].y,
+					gameChar_x, gameChar_y - 10) < t_collectable[i].size/2 + 10)
+				{
+					// set coin's isFound value to true if player is close enough
+					t_collectable[i].isFound = true;
+				}
+			}
 		}
 	}
 	cloud =
@@ -164,6 +199,13 @@ function setup()
 			arc(160-size/2,125,100+size,100+size,PI,0);
 			arc(240+size/2,125,100+size,100+size,PI,0);
 			pop();
+		},
+		drawClouds(allClouds)
+		{
+			for (var i = 0; i < allClouds.length; i++)
+			{
+				cloud.draw(allClouds[i].x,allClouds[i].y,allClouds[i].size);
+			}
 		}
 	}
 
@@ -558,6 +600,13 @@ function setup()
 			triangle(915,369,876.3,436,953.7,436);
 			triangle(915,353,880,412.5,950,413);
 			pop();
+		},
+		drawTrees(allTrees)
+		{
+			for (var i = 0; i < allTrees.length; i++)
+			{
+				tree.draw(allTrees[i],floorPos_y);
+			}
 		}
 	}
 
@@ -565,7 +614,7 @@ function setup()
 	{
 		x_pos: 300,
 		width: 50,
-		draw(x_pos,width)
+		drawCanyon(x_pos,width)
 		{
 			if(x_pos === undefined || width === undefined)
 			{
@@ -585,7 +634,8 @@ function setup()
 			rect(x_pos + (width/4),floorPos_y,width/2,300);
 			rect(x_pos + (width/6),floorPos_y,width/3*2,300);
 			pop();
-		}
+		},
+
 	}
 
 	// multi-object arrays
@@ -623,7 +673,7 @@ function setup()
 			{x: 1500, width: 65},
 			{x: 1700, width: 100}
 		]
-	coins =
+	collectables =
 		[
 			{x: 100, y: 415, size: 30, isFound: false},
 			{x: 800, y: 300, size: 100, isFound: false},
@@ -641,7 +691,9 @@ function setup()
 
 function draw()
 {
-	// falling mechanics (should be at the top)
+	gameChar_world_x = gameChar_x - scrollPos;
+
+	// falling mechanics
 	if(isPlummeting)
 	{
 		console.log("AAUGH");
@@ -697,31 +749,27 @@ function draw()
 	translate(scrollPos, 0);
 
 	background(160, 170, 230); //fill the sky blue
-	noStroke();
+	noStroke(); // disable strokes (the graphics in this game do not use any)
+
 	// draw background scenery
-	for (var i = 0; i < mountains.length; i++)
-	{
-		mountain.draw(mountains[i].x,mountains[i].y,mountains[i].size);
-	}
+	mountain.drawMountains(mountains);
 
-	for (var i = 0; i < trees_x.length; i++)
-	{
-		tree.draw(trees_x[i],floorPos_y);
-	}
+	// TREE CODE HERE
+	tree.drawTrees(trees_x);
+	// END TREE CODE
 
-	for (var i = 0; i < clouds.length; i++)
-	{
-		cloud.draw(clouds[i].x,clouds[i].y,clouds[i].size);
-	}
+	// CLOUD CODE
+		cloud.drawClouds(clouds);
+	// END CLOUD CODE
 
 	// draw floor
 	fill("#008000");
-	rect(0, floorPos_y, width*3, height - floorPos_y); //draw some green ground
+	rect(0, floorPos_y, width*3, height - floorPos_y);
 
-	// canyon code
+	// CANYON CODE
 	for (var i = 0; i < canyons.length; i++)
 	{
-		canyon.draw(canyons[i].x,canyons[i].width);
+		canyon.drawCanyon(canyons[i].x,canyons[i].width);
 		// is player above canyon and on/below the ground?
 		if (gameChar_x > canyon.leftBound + scrollPos
 			&& gameChar_x < canyon.rightBound + scrollPos
@@ -732,25 +780,17 @@ function draw()
 			isPlummeting = true;
 		}
 	}
+	// END CANYON CODE
 
-	// draw foreground
+	// COIN CODE
+	coin.drawCollectables(collectables);
+	coin.checkCollectables(collectables);
+	// END COIN CODE
 
-	for (var i = 0; i < coins.length; i++)
-	{
-		// draw coin unless it's found
-		if(coins[i].isFound === false)
-		{
-			coin.draw(coins[i].x, coins[i].y, coins[i].size);
-		}
-		// is player by coin?
-		if(dist(coin.x_pos + scrollPos, coin.y_pos,
-		gameChar_x, gameChar_y-10) < coin.size/2+10)
-		{
-			coins[i].isFound = true;
-		}
-	}
 	pop();
 	// NON-CHARACTER CODE ENDS
+
+	// CHARACTER CODE BEGINS
 
 	// prevent character from remaining in a jump state forever
 	// (corrects bug which allows hover-mode)
