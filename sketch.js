@@ -1,5 +1,4 @@
 // environment positioning variables
-var floorPos_y;
 var scrollPos = 0;
 var floorPos_y = 432; //NB. we are now using a variable for the floor position
 
@@ -625,8 +624,6 @@ function setup()
 				this.width = width;
 			}
 			push();
-			this.leftBound = x_pos + gameChar_baseWidth/2;
-			this.rightBound = x_pos + width - gameChar_baseWidth/2;
 			noStroke();
 			fill("#422c22");
 			rect(x_pos,floorPos_y,width,300);
@@ -635,7 +632,34 @@ function setup()
 			rect(x_pos + (width/6),floorPos_y,width/3*2,300);
 			pop();
 		},
+		drawCanyons(t_canyon)
+		{
+			for (var i = 0; i < t_canyon.length; i++)
+			{
+				canyon.drawCanyon(t_canyon[i].x,t_canyon[i].width);
+			}
+		},
+		checkCanyons(t_canyon)
+		{
+			for (var i = 0; i < t_canyon.length; i++)
+			{
 
+				// calculate canyon boundaries based on width of character
+				// and width of canyon
+				t_canyon[i].leftBound = t_canyon[i].x + gameChar_baseWidth/2;
+				t_canyon[i].rightBound = t_canyon[i].x + t_canyon[i].width - gameChar_baseWidth/2;
+
+				// is player above canyon and at ground-level?
+				if (gameChar_world_x > t_canyon[i].leftBound
+					&& gameChar_world_x < t_canyon[i].rightBound
+					&& mindy.y >= floorPos_y)
+				{
+					// fall down the hole
+					console.log(isPlummeting);
+					isPlummeting = true;
+				}
+			}
+		}
 	}
 
 	// multi-object arrays
@@ -715,19 +739,8 @@ function draw()
 	// draw floor END
 
 	// CANYON CODE
-	for (var i = 0; i < canyons.length; i++)
-	{
-		canyon.drawCanyon(canyons[i].x,canyons[i].width);
-		// is player above canyon and on/below the ground?
-		if (gameChar_world_x > canyon.leftBound
-			&& gameChar_world_x < canyon.rightBound
-			&& mindy.y >= floorPos_y)
-		{
-			// fall down the hole
-			console.log(isPlummeting);
-			isPlummeting = true;
-		}
-	}
+	canyon.drawCanyons(canyons);
+	canyon.checkCanyons(canyons);
 	// END CANYON CODE
 
 	// collectable CODE
