@@ -770,7 +770,7 @@ function draw()
 
 	// draw floor
 	fill("#008000");
-	rect(0, floorPos_y, width*3, height - floorPos_y);
+	rect(-scrollPos, floorPos_y, width, height - floorPos_y);
 	// draw floor END
 
 	// canyon code
