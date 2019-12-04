@@ -1,3 +1,39 @@
+/*
+Dear The Person Marking my Work,
+
+I previously added some additional physics to my game which would mean the
+template scrolling would not match up with the movement of my character
+properly. Therefore, I have made some slight changes to the template code.
+
+I have attempted to keep my code organised in the same format that the
+template and most of my variables are named the same. However, there are a few
+minor discrepancies which I will explain below to make your life easer.
+
+I have refactored all relevant code into functions as requested.
+However, these functions are now methods of relevant objects:
+
+drawClouds() is cloud.drawClouds()
+drawMountains() is mountain.drawMountains()
+drawTrees() is tree.drawTrees()
+drawCanyons() is canyon.drawCanyons()
+checkCanyons() canyon.checkCanyons()
+drawCollectables() is collectable.drawCollectables()
+checkCollectables() is collectable.drawCollectables()
+
+The functions are still passed arrays containing the data for multiple
+instances of each item in the world, as discussed in the markscheme.
+
+In addition, the character (Mindy) is an object herself. Methods are used
+to draw her moving and jumping in the appropriate directions.
+
+As far as I am aware, everything else is normal.
+
+Thank you for your understanding,
+
+Amanda
+
+*/
+
 // environment positioning variables
 var scrollPos = 0;
 var floorPos_y = 432; //NB. we are now using a variable for the floor position
@@ -63,152 +99,56 @@ function setup()
 {
 	createCanvas(1024, 576);
 
-	// make environment objects for game
-	mountain =
-	{
-		x_pos: width/2-200,
-		y_pos: height/2+150,
-		size: 10,
-		draw(x_pos,y_pos,size)
-		{
-			if(x_pos === undefined || y_pos === undefined
-				|| size === undefined)
+	// multi-object arrays containing game items
+	trees_x = [10, 65, 130, 540, 674, 2000];
+	clouds =
+		[
 			{
-				x_pos = this.x_pos;
-				y_pos = this.y_pos;
-				size = this.size;
-			}
-			push();
-			noStroke();
-			translate(x_pos - 573, y_pos - 470);
-			fill(190,190,200);
-			beginShape();
-			// Vary the amount that size affects each vertex
-			// to create slightly different looking mountains
-			// as the mountain size changes.
-			vertex(518-size/2,233-size); // leftmost peak
-			vertex(539-size/4,277-size/1.5);
-			vertex(574,155-size); // middle peak
-			vertex(622+size/4,311-size/1.5);
-			vertex(636+size/2,294-size); //rightmost peak
-			vertex(683+size/2,470+size);
-			vertex(573+size/2,487+size);
-			vertex(526,487+size);
-			vertex(417-size,476+size);
-			endShape(CLOSE);
-			pop();
-		},
-		drawMountains(allMountains)
-		{
-			for (var i = 0; i < allMountains.length; i++)
+				x: 100, y: 170, size: 40
+			},
 			{
-				mountain.draw(allMountains[i].x,allMountains[i].y,
-					allMountains[i].size);
-			}
-		}
-	}
-	collectable =
-	{
-		x_pos: 0,
-		y_pos: 0,
-		size: 50,
-		draw(x_pos,y_pos,size)
-		{
-			if(x_pos === undefined || y_pos === undefined
-				|| size === undefined)
+				x: 600, y: 105, size: 10
+			},
 			{
-				x_pos = this.x_pos;
-				y_pos = this.y_pos;
-				size = this.size;
-			} else {
-				this.x_pos = x_pos;
-				this.y_pos = y_pos;
-				this.size = size;
-			}
-			var date = new Date();
-			var seconds = date.getSeconds();
-			size = constrain(size,30,100);
-			coinAngle = constrain(coinAngle,-1.5,1.5);
-			if(seconds % 2 == 0)
+				x: 900, y: 222, size: -10
+			},
 			{
-				coinAngle += 0.1;
-			}
-			else
+				x: 1100, y: 170, size: 40
+			},
 			{
-				coinAngle -= 0.1;
-			}
-			push();
-			noStroke();
-			translate(x_pos, y_pos);
-			ellipseMode(CENTER);
-			fill("#DDDD66")
-			ellipse(coinAngle-coinAngle*2,0,size-coinAngle,size);
-			fill("#FFFF99");
-			ellipse(coinAngle,0,size-coinAngle,size);
-			pop();
-		},
-		drawCollectables(t_collectable)
-		{
-			for (var i = 0; i < t_collectable.length; i++)
+				x: 1300, y: 300, size: 40
+			},
 			{
-				// draw collectable unless it's found
-				if(t_collectable[i].isFound === false)
-				{
-					collectable.draw(t_collectable[i].x, t_collectable[i].y, t_collectable[i].size);
-				}
-			}
-		},
-		checkCollectables(t_collectable)
-		{
-			for (var i = 0; i < t_collectable.length; i++)
+				x: 1800, y: 100, size: 60
+			},
 			{
-				// is player by collectable?
-				if(dist(t_collectable[i].x, t_collectable[i].y,
-					gameChar_world_x, gameChar_y - 10) < t_collectable[i].size/2 + 10)
-				{
-					// set collectable's isFound value to true if player is close enough
-					t_collectable[i].isFound = true;
-				}
+				x: 2250, y: 300, size: 40
 			}
-		}
-	}
-	cloud =
-	{
-		x_pos: 0,
-		y_pos: 0,
-		size: 10,
-		draw(x_pos,y_pos,size)
-		{
-			if(x_pos === undefined || y_pos === undefined
-				|| size == undefined)
-			{
-				x_pos = this.x_pos;
-				y_pos = this.y_pos;
-				size = this.size;
-			} else {
-				this.x_pos = x_pos;
-				this.y_pos = y_pos;
-				this.size = size;
-			}
-			push();
-			translate(-200+x_pos,-125+y_pos);
-			noStroke();
-			fill(240,240,253);
-			arc(200,100,100+size,100+size,PI,0);
-			arc(160-size/2,125,100+size,100+size,PI,0);
-			arc(240+size/2,125,100+size,100+size,PI,0);
-			pop();
-		},
-		drawClouds(allClouds)
-		{
-			for (var i = 0; i < allClouds.length; i++)
-			{
-				cloud.draw(allClouds[i].x,allClouds[i].y,allClouds[i].size);
-			}
-		}
-	}
+		];
+	canyons =
+		[
+			{x: 340, width: 50},
+			{x: 600, width: 60},
+			{x: 800, width: 50},
+			{x: 1000, width: 50},
+			{x: 1500, width: 65},
+			{x: 1700, width: 100}
+		]
+	collectables =
+		[
+			{x: 100, y: 415, size: 30, isFound: false},
+			{x: 800, y: 300, size: 100, isFound: false},
+			{x: 1500, y: 400, size: 40, isFound: false}
+		]
+	mountains =
+		[
+			{x: 312, y: 438, size: 10},
+			{x: 600, y: 438, size: 20},
+			{x: 1004, y: 438, size: 10},
+			{x: 2004, y: 438, size: 100}
+		]
 
-	// define player object
+	// define player object and methods for drawing her
 	mindy =
 	{
 		x: 0,
@@ -575,6 +515,151 @@ function setup()
 		}
 	}
 
+	// make environment objects for game and methods for drawing them
+	// and handling collision detection
+	mountain =
+	{
+		x_pos: width/2-200,
+		y_pos: height/2+150,
+		size: 10,
+		draw(x_pos,y_pos,size)
+		{
+			if(x_pos === undefined || y_pos === undefined
+				|| size === undefined)
+			{
+				x_pos = this.x_pos;
+				y_pos = this.y_pos;
+				size = this.size;
+			}
+			push();
+			noStroke();
+			translate(x_pos - 573, y_pos - 470);
+			fill(190,190,200);
+			beginShape();
+			// Vary the amount that size affects each vertex
+			// to create slightly different looking mountains
+			// as the mountain size changes.
+			vertex(518-size/2,233-size); // leftmost peak
+			vertex(539-size/4,277-size/1.5);
+			vertex(574,155-size); // middle peak
+			vertex(622+size/4,311-size/1.5);
+			vertex(636+size/2,294-size); //rightmost peak
+			vertex(683+size/2,470+size);
+			vertex(573+size/2,487+size);
+			vertex(526,487+size);
+			vertex(417-size,476+size);
+			endShape(CLOSE);
+			pop();
+		},
+		drawMountains(allMountains)
+		{
+			for (var i = 0; i < allMountains.length; i++)
+			{
+				mountain.draw(allMountains[i].x,allMountains[i].y,
+					allMountains[i].size);
+			}
+		}
+	}
+	collectable =
+	{
+		x_pos: 0,
+		y_pos: 0,
+		size: 50,
+		draw(x_pos,y_pos,size)
+		{
+			if(x_pos === undefined || y_pos === undefined
+				|| size === undefined)
+			{
+				x_pos = this.x_pos;
+				y_pos = this.y_pos;
+				size = this.size;
+			} else {
+				this.x_pos = x_pos;
+				this.y_pos = y_pos;
+				this.size = size;
+			}
+			var date = new Date();
+			var seconds = date.getSeconds();
+			size = constrain(size,30,100);
+			coinAngle = constrain(coinAngle,-1.5,1.5);
+			if(seconds % 2 == 0)
+			{
+				coinAngle += 0.1;
+			}
+			else
+			{
+				coinAngle -= 0.1;
+			}
+			push();
+			noStroke();
+			translate(x_pos, y_pos);
+			ellipseMode(CENTER);
+			fill("#DDDD66")
+			ellipse(coinAngle-coinAngle*2,0,size-coinAngle,size);
+			fill("#FFFF99");
+			ellipse(coinAngle,0,size-coinAngle,size);
+			pop();
+		},
+		drawCollectables(t_collectable)
+		{
+			for (var i = 0; i < t_collectable.length; i++)
+			{
+				// draw collectable unless it's found
+				if(t_collectable[i].isFound === false)
+				{
+					collectable.draw(t_collectable[i].x, t_collectable[i].y, t_collectable[i].size);
+				}
+			}
+		},
+		checkCollectables(t_collectable)
+		{
+			for (var i = 0; i < t_collectable.length; i++)
+			{
+				// is player by collectable?
+				if(dist(t_collectable[i].x, t_collectable[i].y,
+					gameChar_world_x, gameChar_y - 10) < t_collectable[i].size/2 + 10)
+				{
+					// set collectable's isFound value to true if player is close enough
+					t_collectable[i].isFound = true;
+				}
+			}
+		}
+	}
+	cloud =
+	{
+		x_pos: 0,
+		y_pos: 0,
+		size: 10,
+		draw(x_pos,y_pos,size)
+		{
+			if(x_pos === undefined || y_pos === undefined
+				|| size == undefined)
+			{
+				x_pos = this.x_pos;
+				y_pos = this.y_pos;
+				size = this.size;
+			} else {
+				this.x_pos = x_pos;
+				this.y_pos = y_pos;
+				this.size = size;
+			}
+			push();
+			translate(-200+x_pos,-125+y_pos);
+			noStroke();
+			fill(240,240,253);
+			arc(200,100,100+size,100+size,PI,0);
+			arc(160-size/2,125,100+size,100+size,PI,0);
+			arc(240+size/2,125,100+size,100+size,PI,0);
+			pop();
+		},
+		drawClouds(allClouds)
+		{
+			for (var i = 0; i < allClouds.length; i++)
+			{
+				cloud.draw(allClouds[i].x,allClouds[i].y,allClouds[i].size);
+			}
+		}
+	}
 	tree =
 	{
 		x_pos: 0,
@@ -608,7 +693,6 @@ function setup()
 			}
 		}
 	}
-
 	canyon =
 	{
 		x_pos: 300,
@@ -662,54 +746,6 @@ function setup()
 		}
 	}
 
-	// multi-object arrays
-	trees_x = [10, 65, 130, 540, 674, 2000];
-	clouds =
-		[
-			{
-				x: 100, y: 170, size: 40
-			},
-			{
-				x: 600, y: 105, size: 10
-			},
-			{
-				x: 900, y: 222, size: -10
-			},
-			{
-				x: 1100, y: 170, size: 40
-			},
-			{
-				x: 1300, y: 300, size: 40
-			},
-			{
-				x: 1800, y: 100, size: 60
-			},
-			{
-				x: 2250, y: 300, size: 40
-			}
-		];
-	canyons =
-		[
-			{x: 340, width: 50},
-			{x: 600, width: 60},
-			{x: 800, width: 50},
-			{x: 1000, width: 50},
-			{x: 1500, width: 65},
-			{x: 1700, width: 100}
-		]
-	collectables =
-		[
-			{x: 100, y: 415, size: 30, isFound: false},
-			{x: 800, y: 300, size: 100, isFound: false},
-			{x: 1500, y: 400, size: 40, isFound: false}
-		]
-	mountains =
-		[
-			{x: 312, y: 438, size: 10},
-			{x: 600, y: 438, size: 20},
-			{x: 1004, y: 438, size: 10},
-			{x: 2004, y: 438, size: 100}
-		]
 }
 
 
