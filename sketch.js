@@ -18,7 +18,7 @@ var mindy;
 
 // environment object variables
 var cloud;
-var coin;
+var collectable;
 var canyon;
 var tree;
 
@@ -36,16 +36,18 @@ var isPlummeting = false;
 // character position variables
 var gameChar_x = 400;
 var gameChar_y = 432;
+// character's position relative to world
 var gameChar_world_x = gameChar_x - scrollPos;
 // width of character's feet (used for adjusting hitboxes)
 var gameChar_baseWidth = 20;
 
 // physics variables
+// running
 var maxRunSpeed = 5;
 var minRunSpeed = 1;
 var runSpeed = minRunSpeed;
 var runAccel = 1.1;
-
+// falling
 var maxFallSpeed = 10;
 var minFallSpeed = 1;
 var fallSpeed = minFallSpeed;
@@ -61,8 +63,6 @@ var mountains;
 function setup()
 {
 	createCanvas(1024, 576);
-
-
 
 	// make environment objects for game
 	mountain =
@@ -108,7 +108,7 @@ function setup()
 			}
 		}
 	}
-	coin =
+	collectable =
 	{
 		x_pos: 0,
 		y_pos: 0,
@@ -152,10 +152,10 @@ function setup()
 		{
 			for (var i = 0; i < t_collectable.length; i++)
 			{
-				// draw coin unless it's found
+				// draw collectable unless it's found
 				if(t_collectable[i].isFound === false)
 				{
-					coin.draw(t_collectable[i].x, t_collectable[i].y, t_collectable[i].size);
+					collectable.draw(t_collectable[i].x, t_collectable[i].y, t_collectable[i].size);
 				}
 			}
 		},
@@ -163,11 +163,11 @@ function setup()
 		{
 			for (var i = 0; i < t_collectable.length; i++)
 			{
-				// is player by coin?
-				if(dist(t_collectable[i].x + scrollPos, t_collectable[i].y,
-					gameChar_x, gameChar_y - 10) < t_collectable[i].size/2 + 10)
+				// is player by collectable?
+				if(dist(t_collectable[i].x, t_collectable[i].y,
+					gameChar_world_x, gameChar_y - 10) < t_collectable[i].size/2 + 10)
 				{
-					// set coin's isFound value to true if player is close enough
+					// set collectable's isFound value to true if player is close enough
 					t_collectable[i].isFound = true;
 				}
 			}
@@ -691,61 +691,8 @@ function setup()
 
 function draw()
 {
-	gameChar_world_x = gameChar_x - scrollPos;
-
-	// falling mechanics
-	if(isPlummeting)
-	{
-		console.log("AAUGH");
-		fallSpeed *= fallAccel;
-	}
-
-	// check if the character is on the ground
-	if (gameChar_y >= floorPos_y && isPlummeting === false)
-	{
-		isGrounded = true;
-		gameChar_y = floorPos_y;
-		fallSpeed = minFallSpeed;
-	} else {
-		isGrounded = false;
-
-		if (fallSpeed < maxFallSpeed)
-		{
-			fallSpeed *= fallAccel;
-		}
-		gameChar_y  += fallSpeed;
-	}
-
-	// move the character left and right, now with SCROLLING
-	if (isLeft)
-	{
-		if (runSpeed < maxRunSpeed)
-		{
-			runSpeed *= runAccel;
-		}
-		if(gameChar_x > width * 0.3)
-		{
-			gameChar_x -= runSpeed;
-		} else {
-			scrollPos += runSpeed;
-		}
-	}
-	else if (isRight)
-	{
-		if (runSpeed < maxRunSpeed)
-		{
-			runSpeed *= runAccel;
-		}
-		if (gameChar_x < width * 0.7)
-		{
-			gameChar_x += runSpeed;
-		} else {
-			scrollPos -= runSpeed;
-		}
-	}
-
-	// NON-CHARACTER CODE BEGINS
 	push();
+	// scroll world if required
 	translate(scrollPos, 0);
 
 	background(160, 170, 230); //fill the sky blue
@@ -759,20 +706,21 @@ function draw()
 	// END TREE CODE
 
 	// CLOUD CODE
-		cloud.drawClouds(clouds);
+	cloud.drawClouds(clouds);
 	// END CLOUD CODE
 
 	// draw floor
 	fill("#008000");
 	rect(0, floorPos_y, width*3, height - floorPos_y);
+	// draw floor END
 
 	// CANYON CODE
 	for (var i = 0; i < canyons.length; i++)
 	{
 		canyon.drawCanyon(canyons[i].x,canyons[i].width);
 		// is player above canyon and on/below the ground?
-		if (gameChar_x > canyon.leftBound + scrollPos
-			&& gameChar_x < canyon.rightBound + scrollPos
+		if (gameChar_world_x > canyon.leftBound
+			&& gameChar_world_x < canyon.rightBound
 			&& mindy.y >= floorPos_y)
 		{
 			// fall down the hole
@@ -782,22 +730,15 @@ function draw()
 	}
 	// END CANYON CODE
 
-	// COIN CODE
-	coin.drawCollectables(collectables);
-	coin.checkCollectables(collectables);
-	// END COIN CODE
+	// collectable CODE
+	collectable.drawCollectables(collectables);
+	collectable.checkCollectables(collectables);
+	// END collectable CODE
 
 	pop();
-	// NON-CHARACTER CODE ENDS
 
-	// CHARACTER CODE BEGINS
+	// CHARACTER LOGIC BEGINS
 
-	// prevent character from remaining in a jump state forever
-	// (corrects bug which allows hover-mode)
-	if (isGrounded == true)
-	{
-		isJumping = false;
-	}
 	// draw player character
 	if (isJumping == true && isLeft == true)
 	{
@@ -834,8 +775,68 @@ function draw()
 	} else {
 		mindy.faceFront(gameChar_x,gameChar_y);
 	}
+	// draw character END
 
+	// falling mechanics
+	if(isPlummeting)
+	{
+		console.log("AAUGH");
+		fallSpeed *= fallAccel;
+		runSpeed = 0; // prevent character from leaving edge of canyon
+	}
 
+	// check if the character is on the ground
+	if (gameChar_y >= floorPos_y && isPlummeting === false)
+	{
+		isGrounded = true;
+		gameChar_y = floorPos_y;
+		fallSpeed = minFallSpeed;
+	} else {
+		isGrounded = false;
+
+		if (fallSpeed < maxFallSpeed)
+		{
+			fallSpeed *= fallAccel;
+		}
+		gameChar_y  += fallSpeed;
+	}
+	// check if the character is on the ground END
+
+	// move the character left and right, now with SCROLLING
+	if (isLeft)
+	{
+		if (runSpeed < maxRunSpeed)
+		{
+			runSpeed *= runAccel;
+		}
+		if(gameChar_x > width * 0.3)
+		{
+			gameChar_x -= runSpeed;
+		} else {
+			scrollPos += runSpeed;
+		}
+	}
+	else if (isRight)
+	{
+		if (runSpeed < maxRunSpeed)
+		{
+			runSpeed *= runAccel;
+		}
+		if (gameChar_x < width * 0.7)
+		{
+			gameChar_x += runSpeed;
+		} else {
+			scrollPos -= runSpeed;
+		}
+	}
+	// character left/right movement END
+
+	// prevent character from remaining in a jump state forever
+	// (corrects bug which allowed hover-mode)
+	if (isGrounded == true)
+	{
+		isJumping = false;
+	}
 
 	// state postion (for debugging)
 	fill("#202211");
@@ -844,6 +845,9 @@ function draw()
 	textSize(20);
 	textFont("monospace");
 	text(posString,8,25);
+
+	// update character's position relative to world
+	gameChar_world_x = gameChar_x - scrollPos;
 }
 
 function keyPressed()
