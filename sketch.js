@@ -1,6 +1,12 @@
 /*
 
 */
+// game mechanics variables
+var game_score = 0;
+var flagpole =
+{
+	x_pos: 512, isReached: true, rotation: 1.7, accel: 0.01, vel: 0
+}
 
 // environment positioning variables
 var scrollPos = 0;
@@ -14,6 +20,10 @@ var posString = "000, 000";
 var shoeBlack = "#262020";
 var dressRed = "#AA1313";
 var skin1A = "#DBBCA5";
+var brown = "#422c22";
+var lightBlue = "#5BCFFA";
+var pink = "#F5ABB9";
+var white = "#FFFFFF";
 var coinAngle = 5;
 
 // player object variable
@@ -62,10 +72,72 @@ var clouds;
 var canyons;
 var mountains;
 
+//flagpole function
+function renderFlagpole()
+{
+	var x = flagpole.x_pos;
+	var y = floorPos_y;
+	var height = 40;
+	var rotation = flagpole.rotation;
+	var isReached = flagpole.isReached;
+	var jitterToggle = false;
+
+	// move centre to enable rotation
+	translate(x, y);
+
+	// if player reaches flag, put it up
+	if (flagpole.isReached === true)
+	{
+		// alter rotation in flag's data object for animation
+		if(frameCount % 3 === 0 && flagpole.rotation > 0)
+		{
+			flagpole.vel += flagpole.accel;
+			flagpole.rotation-= flagpole.vel;
+		}
+
+		//simulate wind
+		if(frameCount % 10 === 0){rotation += 0.01;}
+
+		// animate flag!
+		rotate(rotation);
+		fill(brown);
+		rect(0,0,10,-135);
+		fill(lightBlue);
+		rect(10,-100,60, height/5);
+		fill(pink);
+		rect(10,-100-height/5,60, height/5);
+		fill(white);
+		rect(10,-100-height/5*2,60, height/5);
+		fill(pink);
+		rect(10,-100-height/5*3,60, height/5);
+		fill(lightBlue);
+		rect(10,-100-height/5*4,60, height/5);
+
+	//otherwise, draw it on the ground
+	} else {
+		rotation = TAU/4;
+		rotate(rotation);
+		fill(brown);
+		rect(0,0,10,-135);
+		fill(lightBlue);
+		rect(10,-100,60, height/5);
+		fill(pink);
+		rect(10,-100-height/5,60, height/5);
+		fill(white);
+		rect(10,-100-height/5*2,60, height/5);
+		fill(pink);
+		rect(10,-100-height/5*3,60, height/5);
+		fill(lightBlue);
+		rect(10,-100-height/5*4,60, height/5);
+	}
+}
 
 function setup()
 {
 	createCanvas(1024, 576);
+	frameRate(60);
+
+
 
 	// multi-object arrays containing game items
 	trees_x = [10, 65, 130, 540, 674, 1340, 2000];
@@ -76,8 +148,8 @@ function setup()
 			{ x: 900, y: 222, size: -10 },
 			{ x: 1100, y: 170, size: 40 },
 			{ x: 1300, y: 300, size: 40 },
-			{x: 1800, y: 100, size: 60 },
-			{x: 2250, y: 300, size: 40 }
+			{ x: 1800, y: 100, size: 60 },
+			{ x: 2250, y: 300, size: 40 }
 		];
 	canyons =
 		[
@@ -570,10 +642,12 @@ function setup()
 			for (var i = 0; i < t_collectable.length; i++)
 			{
 				// is player by collectable?
+				// set collectable's isFound value to true if player is close enough
 				if(dist(t_collectable[i].x, t_collectable[i].y,
 					gameChar_world_x, gameChar_y - 10) < t_collectable[i].size/2 + 10)
 				{
-					// set collectable's isFound value to true if player is close enough
+					// increment score but only if the coin isn't yet found
+					if(t_collectable[i].isFound === false) { game_score++ };
 					t_collectable[i].isFound = true;
 				}
 			}
@@ -663,7 +737,7 @@ function setup()
 			}
 			push();
 			noStroke();
-			fill("#422c22");
+			fill(brown);
 			rect(x_pos,floorPos_y,width,300);
 			fill(0,0,0,40);
 			rect(x_pos + (width/4),floorPos_y,width/2,300);
@@ -685,7 +759,8 @@ function setup()
 				// calculate canyon boundaries based on width of character
 				// and width of canyon
 				t_canyon[i].leftBound = t_canyon[i].x + gameChar_baseWidth/2;
-				t_canyon[i].rightBound = t_canyon[i].x + t_canyon[i].width - gameChar_baseWidth/2;
+				t_canyon[i].rightBound = t_canyon[i].x +
+					t_canyon[i].width - gameChar_baseWidth/2;
 
 				// is player above canyon and at ground-level?
 				if (gameChar_world_x > t_canyon[i].leftBound
@@ -736,6 +811,10 @@ function draw()
 	collectable.drawCollectables(collectables);
 	collectable.checkCollectables(collectables);
 	// collectable code end
+
+	// flagpole code
+	renderFlagpole();
+	// flagpole code end
 	pop();
 
 	// CHARACTER LOGIC BEGINS
