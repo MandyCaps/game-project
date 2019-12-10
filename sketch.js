@@ -1,36 +1,4 @@
 /*
-Dear The Person Marking my Work,
-
-I previously added some additional physics to my game which would mean the
-template scrolling would not match up with the movement of my character
-properly. Therefore, I have made some slight changes to the template code.
-
-I have attempted to keep my code organised in the same format that the
-template and most of my variables are named the same. However, there are a few
-minor discrepancies which I will explain below to make your life easer.
-
-I have refactored all relevant code into functions as requested.
-However, these functions are now methods of relevant objects:
-
-drawClouds() is cloud.drawClouds()
-drawMountains() is mountain.drawMountains()
-drawTrees() is tree.drawTrees()
-drawCanyons() is canyon.drawCanyons()
-checkCanyons() canyon.checkCanyons()
-drawCollectables() is collectable.drawCollectables()
-checkCollectables() is collectable.drawCollectables()
-
-The functions are still passed arrays containing the data for multiple
-instances of each item in the world, as discussed in the markscheme.
-
-In addition, the character (Mindy) is an object herself. Methods are used
-to draw her moving and jumping in the appropriate directions.
-
-As far as I am aware, everything else is normal.
-
-Thank you for your understanding,
-
-Amanda
 
 */
 
