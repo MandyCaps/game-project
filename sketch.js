@@ -16,7 +16,9 @@ var pink = "#F5ABB9";
 var white = "#FFFFFF";
 var lightGold = "#DDDD66";
 var darkGold = "#FFFF99";
-var grassGreen = "#008000";
+var grassGreen = "#408000";
+var offWhite = "#F0F0fD"
+var mountainGrey = "#c5c5c9";
 var coinAngle = 5;
 
 // player object variable
@@ -196,7 +198,7 @@ function startGame()
 			push();
 			noStroke();
 			translate(x_pos - 573, y_pos - 470);
-			fill(190,190,200);
+			fill(mountainGrey);
 			beginShape();
 			// Vary the amount that size affects each vertex
 			// to create slightly different looking mountains
@@ -306,7 +308,7 @@ function startGame()
 			push();
 			translate(-200+x_pos,-125+y_pos);
 			noStroke();
-			fill(240,240,253);
+			fill(offWhite);
 			arc(200,100,100+size,100+size,PI,0);
 			arc(160-size/2,125,100+size,100+size,PI,0);
 			arc(240+size/2,125,100+size,100+size,PI,0);
@@ -392,7 +394,7 @@ function startGame()
 				t_canyon[i].rightBound = t_canyon[i].x +
 					t_canyon[i].width - gameChar_baseWidth/2;
 
-				// is player above canyon and at ground-level?
+				// is player in line with canyon and at ground-level?
 				if (gameChar_world_x > t_canyon[i].leftBound
 					&& gameChar_world_x < t_canyon[i].rightBound
 					&& mindy.y >= floorPos_y)
@@ -938,7 +940,7 @@ function draw()
 	// game over and level complete code ends
 
 	// has player died?
-	if (gameChar_y > 576 && lives > 0)
+	if (gameChar_y > 600 && lives > 0)
 	{
 		firstFrame = true;
 		startGame();
@@ -991,6 +993,9 @@ function draw()
 	// falling mechanics
 	if(isPlummeting)
 	{
+		console.log(fallAccel, fallSpeed);
+		if(fallSpeed < 2) { fallSpeed = 5.5; }
+		if(gameChar_y < floorPos_y) { gameChar_y = floorPos_y; }
 		fallSpeed *= fallAccel;
 		runSpeed = 0; // prevent character from leaving edge of canyon
 	}
