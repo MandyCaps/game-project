@@ -425,14 +425,30 @@ function startGame()
 	// define player object and methods for drawing her
 	mindy =
 	{
+		// method for drawing head to avoid repetition
+		drawHead()
+		{
+			//HEAD
+			x = gameChar_x;
+			y = gameChar_y;
+			fill(skin1A);
+			beginShape();
+			vertex(x-6,y-59);
+			vertex(x,y-57);
+			vertex(x+6,y-59);
+			vertex(x+8,y-65);
+			vertex(x+6,y-71);
+			vertex(x,y-73);
+			vertex(x-6,y-71);
+			vertex(x-8,y-65);
+			endShape(CLOSE);
+		},
+		// character facing forwards
 		faceFront(x,y){
 			if(x === undefined || y === undefined)
 			{
-				x = this.x;
-				y = this.y;
-			} else {
-				this.x = x;
-				this.y = y;
+				x = gameChar_x;
+				y = gameChar_y;
 			}
 			////facing forwards
 			//SHOES
@@ -475,26 +491,14 @@ function startGame()
 							x+7,y-56);
 
 			//HEAD
-			fill(skin1A);
-			beginShape();
-			vertex(x-6,y-59);
-			vertex(x,y-57);
-			vertex(x+6,y-59);
-			vertex(x+8,y-65);
-			vertex(x+6,y-71);
-			vertex(x,y-73);
-			vertex(x-6,y-71);
-			vertex(x-8,y-65);
-			endShape(CLOSE);
+			this.drawHead();
 		},
+		// character jumping
 		jump(x,y){
 				if(x === undefined || y === undefined)
 				{
-					x = this.x;
-					y = this.y;
-				} else {
-					this.x = x;
-					this.y = y;
+					x = gameChar_x;
+					y = gameChar_y;
 				}
 				noStroke();
 				//SHOES
@@ -536,26 +540,14 @@ function startGame()
 								x+8,y-58);
 
 				//HEAD
-				fill(skin1A);
-				beginShape();
-				vertex(x-6,y-60);
-				vertex(x,y-58);
-				vertex(x+6,y-60);
-				vertex(x+8,y-66);
-				vertex(x+6,y-72);
-				vertex(x,y-74);
-				vertex(x-6,y-72);
-				vertex(x-8,y-66);
-				endShape(CLOSE);
+				// move head slightly while jumping
+				this.drawHead(x,y+1);
 		},
 		walkLeft(x,y){
 			if(x === undefined || y === undefined)
 			{
-				x = this.x;
-				y = this.y;
-			} else {
-				this.x = x;
-				this.y = y;
+				x = gameChar_x;
+				y = gameChar_y;
 			}
 
 			noStroke();
@@ -584,19 +576,8 @@ function startGame()
 				triangle(x,y-10,
 								x-7,y-56,
 								x+7,y-56);
-
-				//HEAD
-				fill(skin1A);
-				beginShape();
-				vertex(x-6,y-59);
-				vertex(x,y-57);
-				vertex(x+6,y-59);
-				vertex(x+8,y-65);
-				vertex(x+6,y-71);
-				vertex(x,y-73);
-				vertex(x-6,y-71);
-				vertex(x-8,y-65);
-				endShape(CLOSE);
+				// HEAD
+				this.drawHead();
 
 				//ARM ON TOP
 				fill(shoeBlack);
@@ -607,11 +588,8 @@ function startGame()
 		walkRight(x,y){
 			if(x === undefined || y === undefined)
 			{
-				x = this.x;
-				y = this.y;
-			} else {
-				this.x = x;
-				this.y = y;
+				x = gameChar_x;
+				y = gameChar_y;
 			}
 
 			noStroke();
@@ -641,17 +619,7 @@ function startGame()
 							x+7,y-56);
 
 			//HEAD
-			fill(skin1A);
-			beginShape();
-			vertex(x-6,y-59);
-			vertex(x,y-57);
-			vertex(x+6,y-59);
-			vertex(x+8,y-65);
-			vertex(x+6,y-71);
-			vertex(x,y-73);
-			vertex(x-6,y-71);
-			vertex(x-8,y-65);
-			endShape(CLOSE);
+			this.drawHead();
 
 			//ARM ON TOP
 			fill(shoeBlack);
@@ -663,11 +631,8 @@ function startGame()
 		jumpLeft(x,y){
 			if(x === undefined || y === undefined)
 			{
-				x = this.x;
-				y = this.y;
-			} else {
-				this.x = x;
-				this.y = y;
+				x = gameChar_x;
+				y = gameChar_y;
 			}
 
 			//SHOES
@@ -711,26 +676,14 @@ function startGame()
 			rect(x+3,y-56,13,4 );
 
 			//HEAD
-			fill(skin1A);
-			beginShape();
-			vertex(x-6,y-60);
-			vertex(x,y-58);
-			vertex(x+6,y-60);
-			vertex(x+8,y-66);
-			vertex(x+6,y-72);
-			vertex(x,y-74);
-			vertex(x-6,y-72);
-			vertex(x-8,y-66);
-			endShape(CLOSE);
+			// move head slightly while jumping
+			this.drawHead(x,y+1);
 		},
 		jumpRight(x,y){
 			if(x === undefined || y === undefined)
 			{
-				x = this.x;
-				y = this.y;
-			} else {
-				this.x = x;
-				this.y = y;
+				x = gameChar_x;
+				y = gameChar_y;
 			}
 			noStroke();
 			//SHOES
@@ -766,17 +719,8 @@ function startGame()
 							x+8,y-58);
 
 			//HEAD
-			fill(skin1A);
-			beginShape();
-			vertex(x-6,y-60);
-			vertex(x,y-58);
-			vertex(x+6,y-60);
-			vertex(x+8,y-66);
-			vertex(x+6,y-72);
-			vertex(x,y-74);
-			vertex(x-6,y-72);
-			vertex(x-8,y-66);
-			endShape(CLOSE);
+			// move head slightly while jumping
+			this.drawHead(x,y+1);
 
 			//ARM ON TOP
 			fill(skin1A);
