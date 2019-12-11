@@ -69,6 +69,28 @@ var clouds;
 var canyons;
 var mountains;
 
+function renderLives(x,y)
+{
+	// set default values for x and y
+	if (x === undefined || y === undefined)
+	{
+		x = 970;
+		y = 30;
+	}
+
+	push();
+	translate(x,y);
+	fill(dressRed);
+	// draw crosses for number of lives minus one
+	for (var i = 1; i < lives; i++)
+	{
+		rect(0,0,30,10);
+		rect(20,-10,-10,30);
+		translate(-50,0);
+	}
+	pop();
+}
+
 function checkFlagpole()
 {
 	var distance = gameChar_world_x - flagpole.x_pos;
@@ -916,10 +938,13 @@ function draw()
 
 	// prevent character from remaining in a jump state forever
 	// (corrects bug which allowed hover-mode)
+	// must run after other mechanics code
 	if (isGrounded == true)
 	{
 		isJumping = false;
 	}
+
+	renderLives(970,30);
 
 	// Display Score
 	fill("#202211");
@@ -935,25 +960,38 @@ function draw()
 
 function keyPressed()
 {
+
+	// game level control
+	if(flagpole.isReached && key == ' ')
+	{
+	    nextLevel();
+	    return
+	}
+	else if(lives == 0 && key == ' ')
+	{
+	    returnToStart();
+	    return
+	}
+	// game level control end
+
+	// character control
 	if (keyCode == 37 || keyCode == 65)
 	{
 		isLeft = true;
-		console.log("isLeft = "+ isLeft);
 	}
 	else if (keyCode == 39 || keyCode == 68)
 	{
 		isRight = true;
-		console.log("isRight = "+ isRight);
 	}
 	else if (keyCode == 32 || keyCode == 38 || keyCode == 87)
 	{
 		isJumping = true;
-		console.log("isJumping = "+ isJumping);
 		if (isGrounded == true)
 		{
 			gameChar_y -= 100;
 		}
 	}
+	// character control end
 }
 
 function keyReleased()
@@ -962,20 +1000,17 @@ function keyReleased()
 	// if left or a is pressed
 	{
 		isLeft = false;
-		console.log("isLeft = "+ isLeft);
 		runSpeed = minRunSpeed;
 	}
 	else if (keyCode == 39 || keyCode == 68)
 	// if right or d is pressed
 	{
 		isRight = false;
-		console.log("isRight = "+ isRight);
 		runSpeed = minRunSpeed;
 	}
 	else if (keyCode == 32 || keyCode == 38 || keyCode == 87)
-	// if space or w is pressed
+	// if space, up or w is pressed
 	{
 		isJumping = false;
-		console.log("isJumping = "+ isJumping);
 	}
 }
