@@ -14,6 +14,9 @@ var brown = "#422c22";
 var lightBlue = "#5BCFFA";
 var pink = "#F5ABB9";
 var white = "#FFFFFF";
+var lightGold = "#DDDD66";
+var darkGold = "#FFFF99";
+var grassGreen = "#008000";
 var coinAngle = 5;
 
 // player object variable
@@ -57,7 +60,7 @@ var fallSpeed;
 var fallAccel;
 
 // declare multi-object arrays
-var trees_x;
+var trees;
 var clouds;
 var canyons;
 var mountains;
@@ -81,6 +84,7 @@ function displayMessage(text1, offset1, text2, offset2)
 
 function startGame()
 {
+	// set default font for game
 	textFont("monospace");
 
 	// on first frame of draw function, unless the character
@@ -117,42 +121,6 @@ function startGame()
 	}
 
 	// multi-object arrays containing game items
-	trees_x = [10, 65, 130, 540, 674, 1340, 1899, 2000, 2631, 2752];
-	clouds =
-		[
-			{ x: 100, y: 170, size: 40 },
-			{ x: 600, y: 105, size: 10 },
-			{ x: 900, y: 222, size: -10 },
-			{ x: 1100, y: 170, size: 40 },
-			{ x: 1300, y: 300, size: 40 },
-			{ x: 1800, y: 100, size: 60 },
-			{ x: 2170, y: 300, size: 20 },
-			{ x: 2250, y: 190, size: 30 },
-			{ x: 2600, y: 280, size: 40 },
-			{ x: 2800, y: 160, size: 30 },
-		];
-	canyons =
-		[
-			{x: 340, width: 50},
-			{x: 600, width: 60},
-			{x: 800, width: 50},
-			{x: 1000, width: 50},
-			{x: 1500, width: 65},
-			{x: 1700, width: 100},
-			{x: 2909, width: 135},
-			{x: 3304, width: 100}
-
-		];
-	collectables =
-		[
-			{x: 100, y: 415, size: 30, isFound: false},
-			{x: 800, y: 300, size: 100, isFound: false},
-			{x: 1490, y: 400, size: 40, isFound: false},
-			{x: 3108, y: 415, size: 40, isFound: false},
-			{x: 3278, y: 300, size: 50, isFound: false},
-			{x: 3500, y: 415, size: 40, isFound: false},
-			{x: 3600, y: 415, size: 40, isFound: false},
-		];
 	mountains =
 		[
 			{x: 312, y: 438, size: 10},
@@ -165,11 +133,276 @@ function startGame()
 			{x: 2730, y: 438, size: 70},
 			{x: 3400, y: 860, size: 300}
 		];
-		flagpole =
+
+	collectables =
+		[
+			{x: 100, y: 415, size: 30, isFound: false},
+			{x: 800, y: 300, size: 100, isFound: false},
+			{x: 1490, y: 400, size: 40, isFound: false},
+			{x: 3108, y: 415, size: 40, isFound: false},
+			{x: 3278, y: 300, size: 50, isFound: false},
+			{x: 3500, y: 415, size: 40, isFound: false},
+			{x: 3600, y: 415, size: 40, isFound: false},
+		];
+
+		clouds =
+			[
+				{ x: 100, y: 170, size: 40 },
+				{ x: 600, y: 105, size: 10 },
+				{ x: 900, y: 222, size: -10 },
+				{ x: 1100, y: 170, size: 40 },
+				{ x: 1300, y: 300, size: 40 },
+				{ x: 1800, y: 100, size: 60 },
+				{ x: 2170, y: 300, size: 20 },
+				{ x: 2250, y: 190, size: 30 },
+				{ x: 2600, y: 280, size: 40 },
+				{ x: 2800, y: 160, size: 30 },
+			];
+
+	trees = [10, 65, 130, 540, 674, 1340, 1899, 2000, 2631, 2752];
+
+	canyons =
+		[
+			{x: 340, width: 50},
+			{x: 600, width: 60},
+			{x: 800, width: 50},
+			{x: 1000, width: 50},
+			{x: 1500, width: 65},
+			{x: 1700, width: 100},
+			{x: 2909, width: 135},
+			{x: 3304, width: 100}
+
+		];
+
+	flagpole =
 		{
 			x_pos: 4000, isReached: false, rotation: 1.7, accel: 0.01, vel: 0
 		}
 
+	// make environment objects for game and methods for drawing them
+	// and handling collision detection
+	mountain =
+	{
+
+		draw(x_pos,y_pos,size)
+		{
+			if(x_pos === undefined || y_pos === undefined
+				|| size === undefined)
+			{
+				x_pos = this.x_pos;
+				y_pos = this.y_pos;
+				size = this.size;
+			}
+			push();
+			noStroke();
+			translate(x_pos - 573, y_pos - 470);
+			fill(190,190,200);
+			beginShape();
+			// Vary the amount that size affects each vertex
+			// to create slightly different looking mountains
+			// as the mountain size changes.
+			vertex(518-size/2,233-size); // leftmost peak
+			vertex(539-size/4,277-size/1.5);
+			vertex(574,155-size); // middle peak
+			vertex(622+size/4,311-size/1.5);
+			vertex(636+size/2,294-size); //rightmost peak
+			vertex(683+size/2,470+size);
+			vertex(573+size/2,487+size);
+			vertex(526,487+size);
+			vertex(417-size,476+size);
+			endShape(CLOSE);
+			pop();
+		},
+		drawAll(allMountains)
+		{
+			for (var i = 0; i < allMountains.length; i++)
+			{
+				mountain.draw(allMountains[i].x,allMountains[i].y,
+					allMountains[i].size);
+			}
+		}
+	}
+	collectable =
+	{
+
+		draw(x_pos,y_pos,size)
+		{
+			if(x_pos === undefined || y_pos === undefined
+				|| size === undefined)
+			{
+				x_pos = this.x_pos;
+				y_pos = this.y_pos;
+				size = this.size;
+			} else {
+				this.x_pos = x_pos;
+				this.y_pos = y_pos;
+				this.size = size;
+			}
+			var date = new Date();
+			var seconds = date.getSeconds();
+			size = constrain(size,30,100);
+			coinAngle = constrain(coinAngle,-1.5,1.5);
+			if(seconds % 2 === 0)
+			{
+				coinAngle += 0.1;
+			}
+			else
+			{
+				coinAngle -= 0.1;
+			}
+			push();
+			noStroke();
+			translate(x_pos, y_pos);
+			ellipseMode(CENTER);
+			fill(lightGold)
+			ellipse(coinAngle-coinAngle*2,0,size-coinAngle,size);
+			fill(darkGold);
+			ellipse(coinAngle,0,size-coinAngle,size);
+			pop();
+		},
+		drawAll(t_collectable)
+		{
+			for (var i = 0; i < t_collectable.length; i++)
+			{
+				// draw collectable unless it's found
+				if(t_collectable[i].isFound === false)
+				{
+					collectable.draw(t_collectable[i].x, t_collectable[i].y, t_collectable[i].size);
+				}
+			}
+		},
+		check(t_collectable)
+		{
+			for (var i = 0; i < t_collectable.length; i++)
+			{
+				// is player by collectable?
+				// set collectable's isFound value to true if player is close enough
+				if(dist(t_collectable[i].x, t_collectable[i].y,
+					gameChar_world_x, gameChar_y - 10) < t_collectable[i].size/2 + 10)
+				{
+					// increment score but only if the coin isn't yet found
+					if(t_collectable[i].isFound === false) { game_score++ };
+					t_collectable[i].isFound = true;
+				}
+			}
+		}
+	}
+	cloud =
+	{
+
+		draw(x_pos,y_pos,size)
+		{
+			if(x_pos === undefined || y_pos === undefined
+				|| size === undefined)
+			{
+				x_pos = this.x_pos;
+				y_pos = this.y_pos;
+				size = this.size;
+			} else {
+				this.x_pos = x_pos;
+				this.y_pos = y_pos;
+				this.size = size;
+			}
+			push();
+			translate(-200+x_pos,-125+y_pos);
+			noStroke();
+			fill(240,240,253);
+			arc(200,100,100+size,100+size,PI,0);
+			arc(160-size/2,125,100+size,100+size,PI,0);
+			arc(240+size/2,125,100+size,100+size,PI,0);
+			pop();
+		},
+		drawAll(allClouds)
+		{
+			for (var i = 0; i < allClouds.length; i++)
+			{
+				cloud.draw(allClouds[i].x,allClouds[i].y,allClouds[i].size);
+			}
+		}
+	}
+	tree =
+	{
+
+		draw(x_pos,y_pos)
+		{
+			if(x_pos === undefined || y_pos === undefined)
+			{
+				x_pos = this.x_pos;
+				y_pos = this.y_pos;
+			} else {
+				this.x_pos = x_pos;
+				this.y_pos = y_pos;
+			}
+			push();
+			translate(x_pos-904-11,y_pos-487);
+			noStroke();
+			fill(brown);
+			rect(904,417,22,70);
+			fill(grassGreen);
+			triangle(915,385,872,460,958,460);
+			triangle(915,369,876.3,436,953.7,436);
+			triangle(915,353,880,412.5,950,413);
+			pop();
+		},
+		drawAll(allTrees)
+		{
+			for (var i = 0; i < allTrees.length; i++)
+			{
+				tree.draw(allTrees[i],floorPos_y);
+			}
+		}
+	}
+	canyon =
+	{
+
+		drawCanyon(x_pos,width)
+		{
+			if(x_pos === undefined || width === undefined)
+			{
+				x_pos = this.x_pos;
+				width = this.width;
+			} else {
+				this.x_pos = x_pos;
+				this.width = width;
+			}
+			push();
+			noStroke();
+			fill(brown);
+			rect(x_pos,floorPos_y,width,300);
+			fill(0,0,0,40);
+			rect(x_pos + (width/4),floorPos_y,width/2,300);
+			rect(x_pos + (width/6),floorPos_y,width/3*2,300);
+			pop();
+		},
+		drawAll(t_canyon)
+		{
+			for (var i = 0; i < t_canyon.length; i++)
+			{
+				canyon.drawCanyon(t_canyon[i].x,t_canyon[i].width);
+			}
+		},
+		check(t_canyon)
+		{
+			for (var i = 0; i < t_canyon.length; i++)
+			{
+
+				// calculate canyon boundaries based on width of character
+				// and width of canyon
+				t_canyon[i].leftBound = t_canyon[i].x + gameChar_baseWidth/2;
+				t_canyon[i].rightBound = t_canyon[i].x +
+					t_canyon[i].width - gameChar_baseWidth/2;
+
+				// is player above canyon and at ground-level?
+				if (gameChar_world_x > t_canyon[i].leftBound
+					&& gameChar_world_x < t_canyon[i].rightBound
+					&& mindy.y >= floorPos_y)
+				{
+					// fall down the hole
+					isPlummeting = true;
+				}
+			}
+		}
+	}
 
 	// define player object and methods for drawing her
 	mindy =
@@ -536,237 +769,6 @@ function startGame()
 		}
 	}
 
-	// make environment objects for game and methods for drawing them
-	// and handling collision detection
-	mountain =
-	{
-		x_pos: width/2-200,
-		y_pos: height/2+150,
-		size: 10,
-		draw(x_pos,y_pos,size)
-		{
-			if(x_pos === undefined || y_pos === undefined
-				|| size === undefined)
-			{
-				x_pos = this.x_pos;
-				y_pos = this.y_pos;
-				size = this.size;
-			}
-			push();
-			noStroke();
-			translate(x_pos - 573, y_pos - 470);
-			fill(190,190,200);
-			beginShape();
-			// Vary the amount that size affects each vertex
-			// to create slightly different looking mountains
-			// as the mountain size changes.
-			vertex(518-size/2,233-size); // leftmost peak
-			vertex(539-size/4,277-size/1.5);
-			vertex(574,155-size); // middle peak
-			vertex(622+size/4,311-size/1.5);
-			vertex(636+size/2,294-size); //rightmost peak
-			vertex(683+size/2,470+size);
-			vertex(573+size/2,487+size);
-			vertex(526,487+size);
-			vertex(417-size,476+size);
-			endShape(CLOSE);
-			pop();
-		},
-		drawAll(allMountains)
-		{
-			for (var i = 0; i < allMountains.length; i++)
-			{
-				mountain.draw(allMountains[i].x,allMountains[i].y,
-					allMountains[i].size);
-			}
-		}
-	}
-	collectable =
-	{
-		x_pos: 0,
-		y_pos: 0,
-		size: 50,
-		draw(x_pos,y_pos,size)
-		{
-			if(x_pos === undefined || y_pos === undefined
-				|| size === undefined)
-			{
-				x_pos = this.x_pos;
-				y_pos = this.y_pos;
-				size = this.size;
-			} else {
-				this.x_pos = x_pos;
-				this.y_pos = y_pos;
-				this.size = size;
-			}
-			var date = new Date();
-			var seconds = date.getSeconds();
-			size = constrain(size,30,100);
-			coinAngle = constrain(coinAngle,-1.5,1.5);
-			if(seconds % 2 == 0)
-			{
-				coinAngle += 0.1;
-			}
-			else
-			{
-				coinAngle -= 0.1;
-			}
-			push();
-			noStroke();
-			translate(x_pos, y_pos);
-			ellipseMode(CENTER);
-			fill("#DDDD66")
-			ellipse(coinAngle-coinAngle*2,0,size-coinAngle,size);
-			fill("#FFFF99");
-			ellipse(coinAngle,0,size-coinAngle,size);
-			pop();
-		},
-		drawAll(t_collectable)
-		{
-			for (var i = 0; i < t_collectable.length; i++)
-			{
-				// draw collectable unless it's found
-				if(t_collectable[i].isFound === false)
-				{
-					collectable.draw(t_collectable[i].x, t_collectable[i].y, t_collectable[i].size);
-				}
-			}
-		},
-		checkCollectables(t_collectable)
-		{
-			for (var i = 0; i < t_collectable.length; i++)
-			{
-				// is player by collectable?
-				// set collectable's isFound value to true if player is close enough
-				if(dist(t_collectable[i].x, t_collectable[i].y,
-					gameChar_world_x, gameChar_y - 10) < t_collectable[i].size/2 + 10)
-				{
-					// increment score but only if the coin isn't yet found
-					if(t_collectable[i].isFound === false) { game_score++ };
-					t_collectable[i].isFound = true;
-				}
-			}
-		}
-	}
-	cloud =
-	{
-		x_pos: 0,
-		y_pos: 0,
-		size: 10,
-		draw(x_pos,y_pos,size)
-		{
-			if(x_pos === undefined || y_pos === undefined
-				|| size == undefined)
-			{
-				x_pos = this.x_pos;
-				y_pos = this.y_pos;
-				size = this.size;
-			} else {
-				this.x_pos = x_pos;
-				this.y_pos = y_pos;
-				this.size = size;
-			}
-			push();
-			translate(-200+x_pos,-125+y_pos);
-			noStroke();
-			fill(240,240,253);
-			arc(200,100,100+size,100+size,PI,0);
-			arc(160-size/2,125,100+size,100+size,PI,0);
-			arc(240+size/2,125,100+size,100+size,PI,0);
-			pop();
-		},
-		drawAll(allClouds)
-		{
-			for (var i = 0; i < allClouds.length; i++)
-			{
-				cloud.draw(allClouds[i].x,allClouds[i].y,allClouds[i].size);
-			}
-		}
-	}
-	tree =
-	{
-		draw(x_pos,y_pos)
-		{
-			if(x_pos === undefined || y_pos === undefined)
-			{
-				x_pos = this.x_pos;
-				y_pos = this.y_pos;
-			} else {
-				this.x_pos = x_pos;
-				this.y_pos = y_pos;
-			}
-			push();
-			translate(x_pos-904-11,y_pos-487);
-			noStroke();
-			fill("#543628");
-			rect(904,417,22,70);
-			fill("#008000");
-			triangle(915,385,872,460,958,460);
-			triangle(915,369,876.3,436,953.7,436);
-			triangle(915,353,880,412.5,950,413);
-			pop();
-		},
-		drawAll(allTrees)
-		{
-			for (var i = 0; i < allTrees.length; i++)
-			{
-				tree.draw(allTrees[i],floorPos_y);
-			}
-		}
-	}
-	canyon =
-	{
-		x_pos: 300,
-		width: 50,
-		drawCanyon(x_pos,width)
-		{
-			if(x_pos === undefined || width === undefined)
-			{
-				x_pos = this.x_pos;
-				width = this.width;
-			} else {
-				this.x_pos = x_pos;
-				this.width = width;
-			}
-			push();
-			noStroke();
-			fill(brown);
-			rect(x_pos,floorPos_y,width,300);
-			fill(0,0,0,40);
-			rect(x_pos + (width/4),floorPos_y,width/2,300);
-			rect(x_pos + (width/6),floorPos_y,width/3*2,300);
-			pop();
-		},
-		drawAll(t_canyon)
-		{
-			for (var i = 0; i < t_canyon.length; i++)
-			{
-				canyon.drawCanyon(t_canyon[i].x,t_canyon[i].width);
-			}
-		},
-		checkCanyons(t_canyon)
-		{
-			for (var i = 0; i < t_canyon.length; i++)
-			{
-
-				// calculate canyon boundaries based on width of character
-				// and width of canyon
-				t_canyon[i].leftBound = t_canyon[i].x + gameChar_baseWidth/2;
-				t_canyon[i].rightBound = t_canyon[i].x +
-					t_canyon[i].width - gameChar_baseWidth/2;
-
-				// is player above canyon and at ground-level?
-				if (gameChar_world_x > t_canyon[i].leftBound
-					&& gameChar_world_x < t_canyon[i].rightBound
-					&& mindy.y >= floorPos_y)
-				{
-					// fall down the hole
-					isPlummeting = true;
-				}
-			}
-		}
-	}
-
 	// make sure lives don't decrement at setup
 	if(firstFrame === true)
 	{
@@ -894,7 +896,7 @@ function draw()
 	mountain.drawAll(mountains);
 
 	// tree code
-	tree.drawAll(trees_x);
+	tree.drawAll(trees);
 	// tree code end
 
 	// cloud code
@@ -902,18 +904,18 @@ function draw()
 	// cloud code end
 
 	// draw floor
-	fill("#008000");
+	fill(grassGreen);
 	rect(-scrollPos, floorPos_y, width, height - floorPos_y);
 	// draw floor end
 
 	// canyon code
 	canyon.drawAll(canyons);
-	canyon.checkCanyons(canyons);
+	canyon.check(canyons);
 	// canyon code end
 
 	// collectable code
 	collectable.drawAll(collectables);
-	collectable.checkCollectables(collectables);
+	collectable.check(collectables);
 	// collectable code end
 
 	// flagpole code
@@ -929,7 +931,7 @@ function draw()
 	}
 
 	// if flag is reached, success message
-	if(flagpole.isReached == true)
+	if(flagpole.isReached === true)
 	{
 		displayMessage("YOU WIN", 100, "Press space to continue.", 0);
 	}
@@ -949,33 +951,33 @@ function draw()
 	// CHARACTER LOGIC BEGINS
 
 	// draw player character
-	if (isJumping == true && isLeft == true)
+	if (isJumping === true && isLeft === true)
 	{
 		mindy.jumpLeft(gameChar_x, gameChar_y);
 	}
-	else if (isJumping == true && isRight == true)
+	else if (isJumping === true && isRight === true)
 	{
 		mindy.jumpRight(gameChar_x, gameChar_y);
 	}
-	else if (isLeft == true)
+	else if (isLeft === true)
 	{
 		mindy.walkLeft(gameChar_x,gameChar_y);
 	}
-	else if (isRight == true)
+	else if (isRight === true)
 	{
 		mindy.walkRight(gameChar_x,gameChar_y);
 	}
-	else if (isJumping == true && isLeft == true)
+	else if (isJumping === true && isLeft === true)
 	{
 		mindy.jumpLeft(gameChar_x, gameChar_y);
 	}
-	else if (isJumping == true && isRight == true)
+	else if (isJumping === true && isRight === true)
 	{
 		mindy.jumpRight(gameChar_x, gameChar_y);
 	}
-	else if (isJumping == true)
+	else if (isJumping === true)
 	{
-		if (isGrounded == false)
+		if (isGrounded === false)
 		{
 			mindy.jump(gameChar_x, gameChar_y);
 		} else {
@@ -1042,7 +1044,7 @@ function draw()
 	// prevent character from remaining in a jump state forever
 	// (corrects bug which allowed hover-mode)
 	// must run after other mechanics code
-	if (isGrounded == true)
+	if (isGrounded === true)
 	{
 		isJumping = false;
 	}
@@ -1068,12 +1070,12 @@ function keyPressed()
 {
 
 	// game level control
-	// if(flagpole.isReached && key == ' ')
+	// if(flagpole.isReached && key === ' ')
 	// {
 	//     nextLevel();
 	//     return
 	// }
-	// else if(lives == 0 && key == ' ')
+	// else if(lives === 0 && key === ' ')
 	// {
 	//     returnToStart();
 	//     return
@@ -1081,18 +1083,18 @@ function keyPressed()
 	// game level control end
 
 	// character control
-	if (keyCode == 37 || keyCode == 65)
+	if (keyCode === 37 || keyCode === 65)
 	{
 		isLeft = true;
 	}
-	else if (keyCode == 39 || keyCode == 68)
+	else if (keyCode === 39 || keyCode === 68)
 	{
 		isRight = true;
 	}
-	else if (keyCode == 32 || keyCode == 38 || keyCode == 87)
+	else if (keyCode === 32 || keyCode === 38 || keyCode === 87)
 	{
 		isJumping = true;
-		if (isGrounded == true)
+		if (isGrounded === true)
 		{
 			gameChar_y -= 100;
 		}
@@ -1102,19 +1104,19 @@ function keyPressed()
 
 function keyReleased()
 {
-	if (keyCode == 37 || keyCode == 65)
+	if (keyCode === 37 || keyCode === 65)
 	// if left or a is pressed
 	{
 		isLeft = false;
 		runSpeed = minRunSpeed;
 	}
-	else if (keyCode == 39 || keyCode == 68)
+	else if (keyCode === 39 || keyCode === 68)
 	// if right or d is pressed
 	{
 		isRight = false;
 		runSpeed = minRunSpeed;
 	}
-	else if (keyCode == 32 || keyCode == 38 || keyCode == 87)
+	else if (keyCode === 32 || keyCode === 38 || keyCode === 87)
 	// if space, up or w is pressed
 	{
 		isJumping = false;
