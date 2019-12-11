@@ -2,19 +2,16 @@
 
 */
 // game mechanics variables
+var lives = 4;
 var game_score = 0;
 var flagpole =
 {
-	x_pos: 512, isReached: true, rotation: 1.7, accel: 0.01, vel: 0
+	x_pos: 512, isReached: false, rotation: 1.7, accel: 0.01, vel: 0
 }
 
 // environment positioning variables
 var scrollPos = 0;
 var floorPos_y = 432; //NB. we are now using a variable for the floor position
-
-// initialising var which will contain human-readable form
-// of the co-ordinate of the last mouse click - this is for debugging
-var posString = "000, 000";
 
 // colour and style
 var shoeBlack = "#262020";
@@ -36,7 +33,7 @@ var canyon;
 var tree;
 
 // used for debugging, can be set by clicking
-var posString;
+var game_score;
 
 // character control variables
 var isLeft = false;
@@ -71,6 +68,15 @@ var trees_x;
 var clouds;
 var canyons;
 var mountains;
+
+function checkFlagpole()
+{
+	var distance = gameChar_world_x - flagpole.x_pos;
+	if(distance < 10 && distance > -10)
+	{
+		flagpole.isReached = true;
+	}
+}
 
 //flagpole function
 function renderFlagpole()
@@ -136,9 +142,6 @@ function setup()
 {
 	createCanvas(1024, 576);
 	frameRate(60);
-
-
-
 	// multi-object arrays containing game items
 	trees_x = [10, 65, 130, 540, 674, 1340, 2000];
 	clouds =
@@ -814,6 +817,7 @@ function draw()
 
 	// flagpole code
 	renderFlagpole();
+	checkFlagpole();
 	// flagpole code end
 	pop();
 
@@ -917,13 +921,13 @@ function draw()
 		isJumping = false;
 	}
 
-	// state postion (for debugging)
+	// Display Score
 	fill("#202211");
-	rect(0,0,15*posString.length,40);
+	rect(0,0,15*game_score.toString.length+15,40);
 	fill("#04EF03")
 	textSize(20);
 	textFont("monospace");
-	text(posString,8,25);
+	text(game_score,8,25);
 
 	// update character's position relative to world
 	gameChar_world_x = gameChar_x - scrollPos;
@@ -974,11 +978,4 @@ function keyReleased()
 		isJumping = false;
 		console.log("isJumping = "+ isJumping);
 	}
-}
-
-function mousePressed()
-{
-	gameChar_x = mouseX;
-	gameChar_y = mouseY;
-	posString = mouseX-Math.round(scrollPos)+", "+mouseY;
 }
