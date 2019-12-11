@@ -361,7 +361,9 @@ function startGame()
 			{x: 1000, width: 50},
 			{x: 1500, width: 65},
 			{x: 1700, width: 100},
-			{x: 2909, width: 130}, // 135 appears to be the hardest jump
+			// 135 appears to be the hardest possible jump.
+			// keeping it at 130 for now.
+			{x: 2909, width: 130},
 			{x: 3304, width: 100}
 
 		],
