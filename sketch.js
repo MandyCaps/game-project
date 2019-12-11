@@ -2,7 +2,7 @@
 
 */
 // game mechanics variables
-var lives = 4;
+var lives;
 var game_score = 0;
 var flagpole =
 {
@@ -53,15 +53,15 @@ var gameChar_baseWidth = 20;
 
 // physics variables
 // running
-var maxRunSpeed = 5;
-var minRunSpeed = 1;
-var runSpeed = minRunSpeed;
-var runAccel = 1.1;
+var maxRunSpeed;
+var minRunSpeed;
+var runSpeednRunSpeed;
+var runAccel1;
 // falling
-var maxFallSpeed = 10;
-var minFallSpeed = 1;
-var fallSpeed = minFallSpeed;
-var fallAccel = 1.1;
+var maxFallSpeed;
+var minFallSpeed;
+var fallSpeed;
+var fallAccel;
 
 // declare multi-object arrays
 var trees_x;
@@ -69,101 +69,41 @@ var clouds;
 var canyons;
 var mountains;
 
-function renderLives(x,y)
+var firstFrame = true;
+
+function startGame()
 {
-	// set default values for x and y
-	if (x === undefined || y === undefined)
+	if(firstFrame === true && lives > 1)
 	{
-		x = 970;
-		y = 30;
+		// reset character position variables
+		gameChar_x = 400;
+		gameChar_y = 432;
+		// reset character's position relative to world
+		gameChar_world_x = gameChar_x - scrollPos;
+		// physics variables
+		// running
+		maxRunSpeed = 5;
+		minRunSpeed = 1;
+		runSpeed = minRunSpeed;
+		runAccel = 1.1;
+		// falling
+		maxFallSpeed = 10;
+		minFallSpeed = 1;
+		fallSpeed = minFallSpeed;
+		fallAccel = 1.1;
+
+		scrollPos = 0;
+		game_score = 0;
+
+		// character control variables
+		isLeft = false;
+		isRight = false;
+		isGrounded = true;
+		isJumping = false;
+		isFalling = false;
+		isPlummeting = false;
 	}
 
-	push();
-	translate(x,y);
-	fill(dressRed);
-	// draw crosses for number of lives minus one
-	for (var i = 1; i < lives; i++)
-	{
-		rect(0,0,30,10);
-		rect(20,-10,-10,30);
-		translate(-50,0);
-	}
-	pop();
-}
-
-function checkFlagpole()
-{
-	var distance = gameChar_world_x - flagpole.x_pos;
-	if(distance < 10 && distance > -10)
-	{
-		flagpole.isReached = true;
-	}
-}
-
-//flagpole function
-function renderFlagpole()
-{
-	var x = flagpole.x_pos;
-	var y = floorPos_y;
-	var height = 40;
-	var rotation = flagpole.rotation;
-	var isReached = flagpole.isReached;
-	var jitterToggle = false;
-
-	// move centre to enable rotation
-	translate(x, y);
-
-	// if player reaches flag, put it up
-	if (flagpole.isReached === true)
-	{
-		// alter rotation in flag's data object for animation
-		if(frameCount % 3 === 0 && flagpole.rotation > 0)
-		{
-			flagpole.vel += flagpole.accel;
-			flagpole.rotation-= flagpole.vel;
-		}
-
-		//simulate wind
-		if(frameCount % 10 === 0){rotation += 0.01;}
-
-		// animate flag!
-		rotate(rotation);
-		fill(brown);
-		rect(0,0,10,-135);
-		fill(lightBlue);
-		rect(10,-100,60, height/5);
-		fill(pink);
-		rect(10,-100-height/5,60, height/5);
-		fill(white);
-		rect(10,-100-height/5*2,60, height/5);
-		fill(pink);
-		rect(10,-100-height/5*3,60, height/5);
-		fill(lightBlue);
-		rect(10,-100-height/5*4,60, height/5);
-
-	//otherwise, draw it on the ground
-	} else {
-		rotation = TAU/4;
-		rotate(rotation);
-		fill(brown);
-		rect(0,0,10,-135);
-		fill(lightBlue);
-		rect(10,-100,60, height/5);
-		fill(pink);
-		rect(10,-100-height/5,60, height/5);
-		fill(white);
-		rect(10,-100-height/5*2,60, height/5);
-		fill(pink);
-		rect(10,-100-height/5*3,60, height/5);
-		fill(lightBlue);
-		rect(10,-100-height/5*4,60, height/5);
-	}
-}
-
-function setup()
-{
-	createCanvas(1024, 576);
-	frameRate(60);
 	// multi-object arrays containing game items
 	trees_x = [10, 65, 130, 540, 674, 1340, 2000];
 	clouds =
@@ -799,8 +739,118 @@ function setup()
 		}
 	}
 
+	// make sure lives don't decrement at setup
+	if(firstFrame === true)
+	{
+		lives--;
+	}
+
+	// ensure the setup code for when the character has respawned/spawned
+	// doesn't run every frame.
+	firstFrame = false;
 }
 
+function renderLives(x,y)
+{
+	// set default values for x and y
+	if (x === undefined || y === undefined)
+	{
+		x = 970;
+		y = 30;
+	}
+
+	push();
+	translate(x,y);
+	fill(dressRed);
+	// draw crosses for number of lives minus one
+	for (var i = 0; i < lives; i++)
+	{
+		rect(0,0,30,10);
+		rect(20,-10,-10,30);
+		translate(-50,0);
+	}
+	pop();
+}
+
+function checkFlagpole()
+{
+	var distance = gameChar_world_x - flagpole.x_pos;
+	if(distance < 10 && distance > -10)
+	{
+		flagpole.isReached = true;
+	}
+}
+
+function renderFlagpole()
+{
+	var x = flagpole.x_pos;
+	var y = floorPos_y;
+	var height = 40;
+	var rotation = flagpole.rotation;
+	var isReached = flagpole.isReached;
+	var jitterToggle = false;
+
+	// move centre to enable rotation
+	translate(x, y);
+
+	// if player reaches flag, put it up
+	if (flagpole.isReached === true)
+	{
+		// alter rotation in flag's data object for animation
+		if(frameCount % 3 === 0 && flagpole.rotation > 0)
+		{
+			flagpole.vel += flagpole.accel;
+			flagpole.rotation-= flagpole.vel;
+		}
+
+		//simulate wind
+		if(frameCount % 10 === 0){rotation += 0.01;}
+
+		// animate flag!
+		rotate(rotation);
+		fill(brown);
+		rect(0,0,10,-135);
+		fill(lightBlue);
+		rect(10,-100,60, height/5);
+		fill(pink);
+		rect(10,-100-height/5,60, height/5);
+		fill(white);
+		rect(10,-100-height/5*2,60, height/5);
+		fill(pink);
+		rect(10,-100-height/5*3,60, height/5);
+		fill(lightBlue);
+		rect(10,-100-height/5*4,60, height/5);
+
+	//otherwise, draw it on the ground
+	} else {
+		rotation = TAU/4;
+		rotate(rotation);
+		fill(brown);
+		rect(0,0,10,-135);
+		fill(lightBlue);
+		rect(10,-100,60, height/5);
+		fill(pink);
+		rect(10,-100-height/5,60, height/5);
+		fill(white);
+		rect(10,-100-height/5*2,60, height/5);
+		fill(pink);
+		rect(10,-100-height/5*3,60, height/5);
+		fill(lightBlue);
+		rect(10,-100-height/5*4,60, height/5);
+	}
+}
+
+function setup()
+{
+	createCanvas(1024, 576);
+	frameRate(60);
+	lives = 4;
+	if(lives > 0)
+	{
+
+		startGame();
+	}
+}
 
 function draw()
 {
@@ -841,6 +891,35 @@ function draw()
 	renderFlagpole();
 	checkFlagpole();
 	// flagpole code end
+
+	// game over & level complete code begins
+	// if character is out of lives, game over
+	if(lives < 1)
+	{
+		var textToDisplay = "GAME OVER";
+		pop();
+		translate()
+		fill(shoeBlack);
+		rect(width/2-350,160, textToDisplay.length*77.7, 200);
+		fill(dressRed);
+		textSize(120);
+		text(textToDisplay, width/2-330,300);
+	}
+
+	// if flag is reached, success message
+	if(flagpole.isReached == true;)
+
+	// game over and level complete code ends
+
+	// has player died?
+	if (gameChar_y > 576 && lives > 0)
+	{
+		firstFrame = true;
+		startGame();
+	}
+	// has player died? end
+
+
 	pop();
 
 	// CHARACTER LOGIC BEGINS
@@ -962,16 +1041,16 @@ function keyPressed()
 {
 
 	// game level control
-	if(flagpole.isReached && key == ' ')
-	{
-	    nextLevel();
-	    return
-	}
-	else if(lives == 0 && key == ' ')
-	{
-	    returnToStart();
-	    return
-	}
+	// if(flagpole.isReached && key == ' ')
+	// {
+	//     nextLevel();
+	//     return
+	// }
+	// else if(lives == 0 && key == ' ')
+	// {
+	//     returnToStart();
+	//     return
+	// }
 	// game level control end
 
 	// character control
