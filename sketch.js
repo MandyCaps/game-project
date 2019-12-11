@@ -361,7 +361,7 @@ function startGame()
 			{x: 1000, width: 50},
 			{x: 1500, width: 65},
 			{x: 1700, width: 100},
-			{x: 2909, width: 135},
+			{x: 2909, width: 130}, // 135 appears to be the hardest jump
 			{x: 3304, width: 100}
 
 		],
@@ -967,10 +967,13 @@ function draw()
 	} else {
 		isGrounded = false;
 
+		// if the character has not reached terminal velocity
 		if (fallSpeed < maxFallSpeed)
 		{
+			// apply acceleration to her rate of descent
 			fallSpeed *= fallAccel;
 		}
+		// move character based on her rate of descent
 		gameChar_y  += fallSpeed;
 	}
 	// check if the character is on the ground END
@@ -978,14 +981,19 @@ function draw()
 	// move the character left and right, now with SCROLLING
 	if (isLeft)
 	{
+		// if the character has not reached maximum speed
 		if (runSpeed < maxRunSpeed)
 		{
+			// apply acceleration to her run speed
 			runSpeed *= runAccel;
 		}
+		// if the character has not reached the right scroll edge
 		if(gameChar_x > width * 0.3)
 		{
+			// alter her x position by the run speed
 			gameChar_x -= runSpeed;
 		} else {
+			// otherwise, scroll the screen by her run speed
 			scrollPos += runSpeed;
 		}
 	}
@@ -1084,9 +1092,4 @@ function keyReleased()
 	{
 		isJumping = false;
 	}
-}
-
-function mousePressed()
-{
-	console.log(round(mouseX-scrollPos),round(mouseY));
 }
