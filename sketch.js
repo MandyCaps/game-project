@@ -1,13 +1,6 @@
-/*
-
-*/
 // game mechanics variables
 var lives;
 var game_score = 0;
-var flagpole =
-{
-	x_pos: 512, isReached: false, rotation: 1.7, accel: 0.01, vel: 0
-}
 
 // environment positioning variables
 var scrollPos = 0;
@@ -68,11 +61,30 @@ var trees_x;
 var clouds;
 var canyons;
 var mountains;
+var flagpole;
 
 var firstFrame = true;
 
+function displayMessage(text1, offset1, text2, offset2)
+{
+	pop();
+	fill(shoeBlack);
+	rect(width/2-350+offset1,65, text1.length*77.7, 200);
+	fill(dressRed);
+	textSize(120);
+	text(text1, width/2-330+offset1,190);
+	textSize(30);
+	text
+	text(text2, width/2-210+offset2,235);
+	push();
+}
+
 function startGame()
 {
+	textFont("monospace");
+
+	// on first frame of draw function, unless the character
+	// is out of lives, reset the positioning, physics and score variables
 	if(firstFrame === true && lives > 1)
 	{
 		// reset character position variables
@@ -105,7 +117,7 @@ function startGame()
 	}
 
 	// multi-object arrays containing game items
-	trees_x = [10, 65, 130, 540, 674, 1340, 2000];
+	trees_x = [10, 65, 130, 540, 674, 1340, 1899, 2000, 2631, 2752];
 	clouds =
 		[
 			{ x: 100, y: 170, size: 40 },
@@ -114,7 +126,10 @@ function startGame()
 			{ x: 1100, y: 170, size: 40 },
 			{ x: 1300, y: 300, size: 40 },
 			{ x: 1800, y: 100, size: 60 },
-			{ x: 2250, y: 300, size: 40 }
+			{ x: 2170, y: 300, size: 20 },
+			{ x: 2250, y: 190, size: 30 },
+			{ x: 2600, y: 280, size: 40 },
+			{ x: 2800, y: 160, size: 30 },
 		];
 	canyons =
 		[
@@ -123,27 +138,42 @@ function startGame()
 			{x: 800, width: 50},
 			{x: 1000, width: 50},
 			{x: 1500, width: 65},
-			{x: 1700, width: 100}
-		]
+			{x: 1700, width: 100},
+			{x: 2909, width: 135},
+			{x: 3304, width: 100}
+
+		];
 	collectables =
 		[
 			{x: 100, y: 415, size: 30, isFound: false},
 			{x: 800, y: 300, size: 100, isFound: false},
-			{x: 1490, y: 400, size: 40, isFound: false}
-		]
+			{x: 1490, y: 400, size: 40, isFound: false},
+			{x: 3108, y: 415, size: 40, isFound: false},
+			{x: 3278, y: 300, size: 50, isFound: false},
+			{x: 3500, y: 415, size: 40, isFound: false},
+			{x: 3600, y: 415, size: 40, isFound: false},
+		];
 	mountains =
 		[
 			{x: 312, y: 438, size: 10},
 			{x: 600, y: 438, size: 20},
 			{x: 1004, y: 438, size: 10},
-			{x: 2004, y: 438, size: 100}
-		]
+			{x: 2004, y: 438, size: 100},
+			{x: 2730, y: 438, size: 70},
+			{x: 2730, y: 500, size: 70},
+			{x: 2960, y: 500, size: 70},
+			{x: 2730, y: 438, size: 70},
+			{x: 3400, y: 860, size: 300}
+		];
+		flagpole =
+		{
+			x_pos: 4000, isReached: false, rotation: 1.7, accel: 0.01, vel: 0
+		}
+
 
 	// define player object and methods for drawing her
 	mindy =
 	{
-		x: 0,
-		y: 0,
 		faceFront(x,y){
 			if(x === undefined || y === undefined)
 			{
@@ -542,7 +572,7 @@ function startGame()
 			endShape(CLOSE);
 			pop();
 		},
-		drawMountains(allMountains)
+		drawAll(allMountains)
 		{
 			for (var i = 0; i < allMountains.length; i++)
 			{
@@ -591,7 +621,7 @@ function startGame()
 			ellipse(coinAngle,0,size-coinAngle,size);
 			pop();
 		},
-		drawCollectables(t_collectable)
+		drawAll(t_collectable)
 		{
 			for (var i = 0; i < t_collectable.length; i++)
 			{
@@ -645,7 +675,7 @@ function startGame()
 			arc(240+size/2,125,100+size,100+size,PI,0);
 			pop();
 		},
-		drawClouds(allClouds)
+		drawAll(allClouds)
 		{
 			for (var i = 0; i < allClouds.length; i++)
 			{
@@ -655,8 +685,6 @@ function startGame()
 	}
 	tree =
 	{
-		x_pos: 0,
-		y_pos: 0,
 		draw(x_pos,y_pos)
 		{
 			if(x_pos === undefined || y_pos === undefined)
@@ -678,7 +706,7 @@ function startGame()
 			triangle(915,353,880,412.5,950,413);
 			pop();
 		},
-		drawTrees(allTrees)
+		drawAll(allTrees)
 		{
 			for (var i = 0; i < allTrees.length; i++)
 			{
@@ -709,7 +737,7 @@ function startGame()
 			rect(x_pos + (width/6),floorPos_y,width/3*2,300);
 			pop();
 		},
-		drawCanyons(t_canyon)
+		drawAll(t_canyon)
 		{
 			for (var i = 0; i < t_canyon.length; i++)
 			{
@@ -758,8 +786,9 @@ function renderLives(x,y)
 		x = 970;
 		y = 30;
 	}
-
 	push();
+	fill(shoeBlack);
+	rect(855,60,161,-60);
 	translate(x,y);
 	fill(dressRed);
 	// draw crosses for number of lives minus one
@@ -862,28 +891,28 @@ function draw()
 	noStroke(); // disable strokes (the graphics in this game do not use any)
 
 	// draw background scenery
-	mountain.drawMountains(mountains);
+	mountain.drawAll(mountains);
 
 	// tree code
-	tree.drawTrees(trees_x);
+	tree.drawAll(trees_x);
 	// tree code end
 
 	// cloud code
-	cloud.drawClouds(clouds);
+	cloud.drawAll(clouds);
 	// cloud code end
 
 	// draw floor
 	fill("#008000");
 	rect(-scrollPos, floorPos_y, width, height - floorPos_y);
-	// draw floor END
+	// draw floor end
 
 	// canyon code
-	canyon.drawCanyons(canyons);
+	canyon.drawAll(canyons);
 	canyon.checkCanyons(canyons);
 	// canyon code end
 
 	// collectable code
-	collectable.drawCollectables(collectables);
+	collectable.drawAll(collectables);
 	collectable.checkCollectables(collectables);
 	// collectable code end
 
@@ -896,19 +925,14 @@ function draw()
 	// if character is out of lives, game over
 	if(lives < 1)
 	{
-		var textToDisplay = "GAME OVER";
-		pop();
-		translate()
-		fill(shoeBlack);
-		rect(width/2-350,160, textToDisplay.length*77.7, 200);
-		fill(dressRed);
-		textSize(120);
-		text(textToDisplay, width/2-330,300);
+		displayMessage("GAME OVER", 0, "Press space to continue.", 0);
 	}
 
 	// if flag is reached, success message
-	if(flagpole.isReached == true;)
-
+	if(flagpole.isReached == true)
+	{
+		displayMessage("YOU WIN", 100, "Press space to continue.", 0);
+	}
 	// game over and level complete code ends
 
 	// has player died?
@@ -1023,15 +1047,18 @@ function draw()
 		isJumping = false;
 	}
 
+	// show life tokens
 	renderLives(970,30);
 
 	// Display Score
-	fill("#202211");
+	push();
+	textStyle(BOLD);
+	fill(shoeBlack);
 	rect(0,0,15*game_score.toString.length+15,40);
-	fill("#04EF03")
+	fill(dressRed)
 	textSize(20);
-	textFont("monospace");
 	text(game_score,8,25);
+	pop();
 
 	// update character's position relative to world
 	gameChar_world_x = gameChar_x - scrollPos;
@@ -1092,4 +1119,9 @@ function keyReleased()
 	{
 		isJumping = false;
 	}
+}
+
+function mousePressed()
+{
+	console.log(round(mouseX-scrollPos),round(mouseY));
 }
