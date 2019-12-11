@@ -10,15 +10,15 @@ var floorPos_y = 432; //NB. we are now using a variable for the floor position
 var shoeBlack = "#262020";
 var dressRed = "#AA1313";
 var skin1A = "#DBBCA5";
-var brown = "#422c22";
+var brown = "#422C22";
 var lightBlue = "#5BCFFA";
 var pink = "#F5ABB9";
 var white = "#FFFFFF";
 var lightGold = "#DDDD66";
 var darkGold = "#FFFF99";
 var grassGreen = "#408000";
-var offWhite = "#F0F0fD"
-var mountainGrey = "#c5c5c9";
+var offWhite = "#F0F0FD"
+var mountainGrey = "#C5C5C9";
 var coinAngle = 5;
 
 // player object variable
@@ -29,6 +29,7 @@ var cloud;
 var collectable;
 var canyon;
 var tree;
+var flagpole;
 
 // used for debugging, can be set by clicking
 var game_score;
@@ -53,25 +54,20 @@ var gameChar_baseWidth = 20;
 // running
 var maxRunSpeed;
 var minRunSpeed;
-var runSpeednRunSpeed;
-var runAccel1;
+var runSpeed;
+var runAccel;
 // falling
 var maxFallSpeed;
 var minFallSpeed;
 var fallSpeed;
 var fallAccel;
 
-// declare multi-object arrays
-var trees;
-var clouds;
-var canyons;
-var mountains;
-var flagpole;
-
+// used for resett
 var firstFrame = true;
 
 function displayMessage(text1, offset1, text2, offset2)
 {
+
 	pop();
 	fill(shoeBlack);
 	rect(width/2-350+offset1,65, text1.length*77.7, 200);
@@ -122,64 +118,7 @@ function startGame()
 		isPlummeting = false;
 	}
 
-	// multi-object arrays containing game items
-	mountains =
-		[
-			{x: 312, y: 438, size: 10},
-			{x: 600, y: 438, size: 20},
-			{x: 1004, y: 438, size: 10},
-			{x: 2004, y: 438, size: 100},
-			{x: 2730, y: 438, size: 70},
-			{x: 2730, y: 500, size: 70},
-			{x: 2960, y: 500, size: 70},
-			{x: 2730, y: 438, size: 70},
-			{x: 3400, y: 860, size: 300}
-		];
 
-	collectables =
-		[
-			{x: 100, y: 415, size: 30, isFound: false},
-			{x: 800, y: 300, size: 100, isFound: false},
-			{x: 1490, y: 400, size: 40, isFound: false},
-			{x: 3108, y: 415, size: 40, isFound: false},
-			{x: 3278, y: 300, size: 50, isFound: false},
-			{x: 3500, y: 415, size: 40, isFound: false},
-			{x: 3600, y: 415, size: 40, isFound: false},
-		];
-
-		clouds =
-			[
-				{ x: 100, y: 170, size: 40 },
-				{ x: 600, y: 105, size: 10 },
-				{ x: 900, y: 222, size: -10 },
-				{ x: 1100, y: 170, size: 40 },
-				{ x: 1300, y: 300, size: 40 },
-				{ x: 1800, y: 100, size: 60 },
-				{ x: 2170, y: 300, size: 20 },
-				{ x: 2250, y: 190, size: 30 },
-				{ x: 2600, y: 280, size: 40 },
-				{ x: 2800, y: 160, size: 30 },
-			];
-
-	trees = [10, 65, 130, 540, 674, 1340, 1899, 2000, 2631, 2752];
-
-	canyons =
-		[
-			{x: 340, width: 50},
-			{x: 600, width: 60},
-			{x: 800, width: 50},
-			{x: 1000, width: 50},
-			{x: 1500, width: 65},
-			{x: 1700, width: 100},
-			{x: 2909, width: 135},
-			{x: 3304, width: 100}
-
-		];
-
-	flagpole =
-		{
-			x_pos: 4000, isReached: false, rotation: 1.7, accel: 0.01, vel: 0
-		}
 
 	// make environment objects for game and methods for drawing them
 	// and handling collision detection
@@ -405,6 +344,65 @@ function startGame()
 			}
 		}
 	}
+
+	// multi-object arrays containing game items
+	mountain.data =
+		[
+			{x: 312, y: 438, size: 10},
+			{x: 600, y: 438, size: 20},
+			{x: 1004, y: 438, size: 10},
+			{x: 2004, y: 438, size: 100},
+			{x: 2730, y: 438, size: 70},
+			{x: 2730, y: 500, size: 70},
+			{x: 2960, y: 500, size: 70},
+			{x: 2730, y: 438, size: 70},
+			{x: 3400, y: 860, size: 300}
+		];
+
+	collectable.data =
+		[
+			{x: 100, y: 415, size: 30, isFound: false},
+			{x: 800, y: 300, size: 100, isFound: false},
+			{x: 1490, y: 400, size: 40, isFound: false},
+			{x: 3108, y: 415, size: 40, isFound: false},
+			{x: 3278, y: 300, size: 50, isFound: false},
+			{x: 3500, y: 415, size: 40, isFound: false},
+			{x: 3600, y: 415, size: 40, isFound: false},
+		];
+
+		cloud.data =
+			[
+				{ x: 100, y: 170, size: 40 },
+				{ x: 600, y: 105, size: 10 },
+				{ x: 900, y: 222, size: -10 },
+				{ x: 1100, y: 170, size: 40 },
+				{ x: 1300, y: 300, size: 40 },
+				{ x: 1800, y: 100, size: 60 },
+				{ x: 2170, y: 300, size: 20 },
+				{ x: 2250, y: 190, size: 30 },
+				{ x: 2600, y: 280, size: 40 },
+				{ x: 2800, y: 160, size: 30 },
+			];
+
+	tree.data = [10, 65, 130, 540, 674, 1340, 1899, 2000, 2631, 2752];
+
+	canyon.data =
+		[
+			{x: 340, width: 50},
+			{x: 600, width: 60},
+			{x: 800, width: 50},
+			{x: 1000, width: 50},
+			{x: 1500, width: 65},
+			{x: 1700, width: 100},
+			{x: 2909, width: 135},
+			{x: 3304, width: 100}
+
+		];
+
+	flagpole =
+		{
+			x_pos: 4000, isReached: false, rotation: 1.7, accel: 0.01, vel: 0
+		}
 
 	// define player object and methods for drawing her
 	mindy =
@@ -880,7 +878,6 @@ function setup()
 	lives = 4;
 	if(lives > 0)
 	{
-
 		startGame();
 	}
 }
@@ -895,14 +892,14 @@ function draw()
 	noStroke(); // disable strokes (the graphics in this game do not use any)
 
 	// draw background scenery
-	mountain.drawAll(mountains);
+	mountain.drawAll(mountain.data);
 
 	// tree code
-	tree.drawAll(trees);
+	tree.drawAll(tree.data);
 	// tree code end
 
 	// cloud code
-	cloud.drawAll(clouds);
+	cloud.drawAll(cloud.data);
 	// cloud code end
 
 	// draw floor
@@ -911,13 +908,13 @@ function draw()
 	// draw floor end
 
 	// canyon code
-	canyon.drawAll(canyons);
-	canyon.check(canyons);
+	canyon.drawAll(canyon.data);
+	canyon.check(canyon.data);
 	// canyon code end
 
 	// collectable code
-	collectable.drawAll(collectables);
-	collectable.check(collectables);
+	collectable.drawAll(collectable.data);
+	collectable.check(collectable.data);
 	// collectable code end
 
 	// flagpole code
@@ -1075,16 +1072,16 @@ function keyPressed()
 {
 
 	// game level control
-	// if(flagpole.isReached && key === ' ')
-	// {
-	//     nextLevel();
-	//     return
-	// }
-	// else if(lives === 0 && key === ' ')
-	// {
-	//     returnToStart();
-	//     return
-	// }
+	if(flagpole.isReached && key === ' ')
+	{
+	    nextLevel();
+	    return
+	}
+	else if(lives === 0 && key === ' ')
+	{
+	    returnToStart();
+	    return
+	}
 	// game level control end
 
 	// character control
