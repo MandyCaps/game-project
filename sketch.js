@@ -307,7 +307,7 @@ function startGame()
 		{
 			if(allClouds === undefined)
 			{
-				allClouds === this.data;
+				allClouds = this.data;
 			}
 			for (var i = 0; i < allClouds.length; i++)
 			{
@@ -390,7 +390,7 @@ function startGame()
 		{
 			if(allCanyons === undefined)
 			{
-				allCanyons === this.data;
+				allCanyons = this.data;
 			}
 			for (var i = 0; i < allCanyons.length; i++)
 			{
@@ -401,12 +401,12 @@ function startGame()
 		{
 			if(allCanyons === undefined)
 			{
-				allCanyons === this.data;
+				allCanyons = this.data;
 			}
 			for (var i = 0; i < allCanyons.length; i++)
 			{
 
-				// calculate canyon boundaries based on width of character
+				// calculate canyon boundaries based on width of character's feet
 				// and width of canyon
 				allCanyons[i].leftBound = allCanyons[i].x + gameChar_baseWidth/2;
 				allCanyons[i].rightBound = allCanyons[i].x +
@@ -415,7 +415,7 @@ function startGame()
 				// is player in line with canyon and at ground-level?
 				if (gameChar_world_x > allCanyons[i].leftBound
 					&& gameChar_world_x < allCanyons[i].rightBound
-					&& mindy.y >= floorPos_y)
+					&& gameChar_y >= floorPos_y)
 				{
 					// fall down the hole
 					isPlummeting = true;
@@ -838,7 +838,6 @@ function renderFlagpole()
 function setup()
 {
 	createCanvas(1024, 576);
-	frameRate(60);
 	if(lives > 0)
 	{
 		startGame();
@@ -854,15 +853,17 @@ function draw()
 	background(160, 170, 230); //fill the sky blue
 	noStroke(); // disable strokes (the graphics in this game do not use any)
 
-	// draw background scenery
-	mountain.drawAll(mountain.data);
+	// draw background scenery (drawAll & check functions now have default values
+	// which they obtain from internal arrays, but they still have the option to
+	// be passed arrays of position data as parameters)
+	mountain.drawAll();
 
 	// tree code
-	tree.drawAll(tree.data);
+	tree.drawAll();
 	// tree code end
 
 	// cloud code
-	cloud.drawAll(cloud.data);
+	cloud.drawAll();
 	// cloud code end
 
 	// draw floor
@@ -871,13 +872,13 @@ function draw()
 	// draw floor end
 
 	// canyon code
-	canyon.drawAll(canyon.data);
-	canyon.check(canyon.data);
+	canyon.drawAll();
+	canyon.check();
 	// canyon code end
 
 	// collectable code
-	collectable.drawAll(collectable.data);
-	collectable.check(collectable.data);
+	collectable.drawAll();
+	collectable.check();
 	// collectable code end
 
 	// flagpole code
@@ -906,7 +907,6 @@ function draw()
 		startGame();
 	}
 	// has player died? end
-
 
 	pop();
 
