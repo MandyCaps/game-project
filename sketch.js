@@ -142,7 +142,7 @@ function startGame()
 			{x: 2730, y: 438, size: 70},
 			{x: 3400, y: 860, size: 300}
 		],
-		draw(x_pos,y_pos,size)
+		draw: function(x_pos,y_pos,size)
 		{
 			if(x_pos === undefined || y_pos === undefined
 				|| size === undefined)
@@ -171,7 +171,7 @@ function startGame()
 			endShape(CLOSE);
 			pop();
 		},
-		drawAll(allMountains)
+		drawAll: function(allMountains)
 		{
 			if(allMountains === undefined)
 			{
@@ -196,7 +196,7 @@ function startGame()
 				{x: 3500, y: 415, size: 40, isFound: false},
 				{x: 3600, y: 415, size: 40, isFound: false},
 			],
-		draw(x_pos,y_pos,size)
+		draw: function(x_pos,y_pos,size)
 		{
 			if(x_pos === undefined || y_pos === undefined
 				|| size === undefined)
@@ -231,7 +231,7 @@ function startGame()
 			ellipse(coinAngle,0,size-coinAngle,size);
 			pop();
 		},
-		drawAll(allCollectables)
+		drawAll: function(allCollectables)
 		{
 			if (allCollectables === undefined)
 			{
@@ -246,7 +246,7 @@ function startGame()
 				}
 			}
 		},
-		check(allCollectables)
+		check: function(allCollectables)
 		{
 			if (allCollectables === undefined)
 			{
@@ -281,7 +281,7 @@ function startGame()
 			{ x: 2600, y: 280, size: 40 },
 			{ x: 2800, y: 160, size: 30 },
 		],
-		draw(x_pos,y_pos,size)
+		draw: function(x_pos,y_pos,size)
 		{
 			if(x_pos === undefined || y_pos === undefined
 				|| size === undefined)
@@ -303,7 +303,7 @@ function startGame()
 			arc(240+size/2,125,100+size,100+size,PI,0);
 			pop();
 		},
-		drawAll(allClouds)
+		drawAll: function(allClouds)
 		{
 			if(allClouds === undefined)
 			{
@@ -318,7 +318,7 @@ function startGame()
 	tree =
 	{
 		data: [10, 65, 130, 540, 674, 1340, 1899, 2000, 2631, 2752],
-		draw(x_pos,y_pos)
+		draw: function(x_pos,y_pos)
 		{
 			if(x_pos === undefined || y_pos === undefined)
 			{
@@ -339,7 +339,7 @@ function startGame()
 			triangle(915,353,880,412.5,950,413);
 			pop();
 		},
-		drawAll(allTrees)
+		drawAll: function(allTrees)
 		{
 			if(allTrees === undefined)
 			{
@@ -367,7 +367,7 @@ function startGame()
 			{x: 3304, width: 100}
 
 		],
-		drawCanyon(x_pos,width)
+		drawCanyon: function(x_pos,width)
 		{
 			if(x_pos === undefined || width === undefined)
 			{
@@ -386,7 +386,7 @@ function startGame()
 			rect(x_pos + (width/6),floorPos_y,width/3*2,300);
 			pop();
 		},
-		drawAll(allCanyons)
+		drawAll: function(allCanyons)
 		{
 			if(allCanyons === undefined)
 			{
@@ -397,7 +397,7 @@ function startGame()
 				canyon.drawCanyon(allCanyons[i].x,allCanyons[i].width);
 			}
 		},
-		check(allCanyons)
+		check: function(allCanyons)
 		{
 			if(allCanyons === undefined)
 			{
@@ -428,7 +428,7 @@ function startGame()
 	mindy =
 	{
 		// method for drawing head to avoid repetition
-		drawHead()
+		drawHead: function()
 		{
 			//HEAD
 			x = gameChar_x;
@@ -446,7 +446,7 @@ function startGame()
 			endShape(CLOSE);
 		},
 		// character facing forwards
-		faceFront(x,y){
+		faceFront: function(x,y){
 			if(x === undefined || y === undefined)
 			{
 				x = gameChar_x;
@@ -496,7 +496,7 @@ function startGame()
 			this.drawHead();
 		},
 		// character jumping
-		jump(x,y){
+		jump: function(x,y){
 				if(x === undefined || y === undefined)
 				{
 					x = gameChar_x;
@@ -545,7 +545,7 @@ function startGame()
 				// move head slightly while jumping
 				this.drawHead(x,y+1);
 		},
-		walkLeft(x,y){
+		walkLeft: function(x,y){
 			if(x === undefined || y === undefined)
 			{
 				x = gameChar_x;
@@ -587,7 +587,7 @@ function startGame()
 				fill(skin1A);
 				rect(x+3,y-43,4,10);
 		},
-		walkRight(x,y){
+		walkRight: function(x,y){
 			if(x === undefined || y === undefined)
 			{
 				x = gameChar_x;
@@ -630,7 +630,7 @@ function startGame()
 			fill(skin1A);
 			rect(x-7,y-43,4,10);
 		},
-		jumpLeft(x,y){
+		jumpLeft: function(x,y){
 			if(x === undefined || y === undefined)
 			{
 				x = gameChar_x;
@@ -681,7 +681,7 @@ function startGame()
 			// move head slightly while jumping
 			this.drawHead(x,y+1);
 		},
-		jumpRight(x,y){
+		jumpRight: function(x,y){
 			if(x === undefined || y === undefined)
 			{
 				x = gameChar_x;
